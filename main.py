@@ -17,3 +17,7 @@ while corriendo:
     pygame.display.update()
 
 pygame.quit()
+
+#es una prueba
+
+print("Esto es una prueba")

@@ -21,3 +21,5 @@ pygame.quit()
 #es una prueba
 
 print("Esto es una prueba")
+
+print("Pureba 2- toma 2")

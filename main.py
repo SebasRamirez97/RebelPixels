@@ -1,10 +1,12 @@
 import pygame
+from scripts import enemigos 
+from scripts.jugador import imagen_jugador as jimage
 
 pygame.init()
 
 ventana = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Ventana controlada")
-cajita = pygame.surface((100,100))
+
 
 
 corriendo = True
@@ -15,16 +17,11 @@ while corriendo:
             corriendo = False
 
     # Acá se refresca la pantalla en cada ciclo, no por cada evento
-        ventana.fill((0, 0, 0))  # Fondo negro
-    cajita.fill((255,0,0))
-    pygame.display.update()
-    
+    ventana.fill((50, 50, 50))  # Fondo negro
+    ventana.blit(jimage(), (360,500))  
+    pygame.display.flip()
+    pygame.time.Clock().tick(60)
     
 
 pygame.quit()
 
-#es una prueba
-
-print("Esto es una prueba")
-
-print("Pureba 2- toma 2")

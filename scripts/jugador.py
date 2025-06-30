@@ -1,6 +1,6 @@
 import pygame
+from .funciones_comunes import cargar_imagen as carga
 
 def imagen_jugador():
-    xwing = pygame.image.load("RebelPixels/assets/sprites/jugador.png")
-    xwing = pygame.transform.scale_by(xwing, 0.07)
+    xwing = carga("RebelPixels/assets/sprites/jugador.png" , 0.05)
     return xwing

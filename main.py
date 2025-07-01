@@ -5,6 +5,7 @@ from scripts.jugador import imagen_jugador as p_image
 from scripts.enemigos import imagenes_enemigos as e_image
 from scripts.enemigos import poscicion_poligonica as poligono
 from scripts.enemigos import varios_escuadrones as multi_squad
+from scripts.jugador import procesar_movimiento
 
 pygame.init()
 
@@ -12,6 +13,10 @@ ventana = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Ventana controlada")
 (caza, bombardero, fragata, carrier, nodriza) = e_image()
 
+jugador_x = 400 #posicion del jugador
+jugador_y = 500
+VELOCIDAD_JUGADOR = 5
+jugador_sprite = p_image()
 
 
 corriendo = True
@@ -27,18 +32,24 @@ while corriendo:
 
     # Acá se refresca la pantalla en cada ciclo, no por cada evento
     ventana.fill((50, 50, 50))  # Fondo gris
+    
+    #Movimientos enemigos
     aux_x += VELOCIDAD_X
     #aux_y += VELOCIDAD_Y
     #if aux_y == 150:
     if aux_x  > 100 or aux_x <-100:
         VELOCIDAD_X = -VELOCIDAD_X 
     
+    #movimiento jugador
+    jugador_x, jugador_y = procesar_movimiento(jugador_x, jugador_y, VELOCIDAD_JUGADOR)
+
+    
     multi_squad(3,caza,(150+aux_x,150),50,200,ventana)
     rot += 0.05
     poligono(fragata,0.12,(400+aux_x,300),caza,5,ventana,150,rot)
     #ventana.blit(p_image(),(400-25.6,300-25.6))#pegado de jugador en el fondo
     
-    
+    ventana.blit(jugador_sprite, (jugador_x, jugador_y))
 
     
     pygame.display.flip()

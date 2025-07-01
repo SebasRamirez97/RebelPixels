@@ -2,11 +2,11 @@ import pygame
 from .funciones_comunes import cargar_imagen as carga
 import math
 def imagenes_enemigos():
-    caza = carga("RebelPixels_pruebas/assets/sprites/caza.png" , 0.07)
-    bombardero = carga("RebelPixels_pruebas/assets/sprites/bombardero.png" , 0.08)
-    fragata = carga("RebelPixels_pruebas/assets/sprites/fragata.png" , 0.12)
-    carrier = carga("RebelPixels_pruebas/assets/sprites/carrier.png" , 0.12)
-    nodriza = carga("RebelPixels_pruebas/assets/sprites/nodriza.png" , 0.12)
+    caza = carga("assets/sprites/caza.png" , 0.07)
+    bombardero = carga("assets/sprites/bombardero.png" , 0.08)
+    fragata = carga("assets/sprites/fragata.png" , 0.12)
+    carrier = carga("assets/sprites/carrier.png" , 0.12)
+    nodriza = carga("assets/sprites/nodriza.png" , 0.12)
     return [caza, bombardero, fragata, carrier, nodriza]
 
 def poscicion_poligonica(nave_central,escala, pos_nave_central, nave_vertice,cantidad,ventana,distancia,rotacion):

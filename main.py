@@ -13,6 +13,11 @@ ventana = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Ventana controlada")
 (caza, bombardero, fragata, carrier, nodriza) = e_image()
 
+# Fondo de pantalla
+fondo = pygame.image.load("assets/sprites/fondo.png")
+fondo = pygame.transform.scale(fondo, (800, 600))
+
+
 jugador_x = 400 #posicion del jugador
 jugador_y = 500
 VELOCIDAD_JUGADOR = 5
@@ -29,9 +34,12 @@ while corriendo:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             corriendo = False
-
+            
     # Acá se refresca la pantalla en cada ciclo, no por cada evento
     ventana.fill((50, 50, 50))  # Fondo gris
+    
+    # Dibuja el fondo sobre la ventana        
+    ventana.blit(fondo, (0, 0))  
     
     #Movimientos enemigos
     aux_x += VELOCIDAD_X
@@ -54,7 +62,6 @@ while corriendo:
     
     pygame.display.flip()
     pygame.time.Clock().tick(60)
-    
 
 pygame.quit()
 

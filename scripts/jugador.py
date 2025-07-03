@@ -1,5 +1,6 @@
 import pygame
 from .funciones_comunes import cargar_imagen as carga
+from .funciones_comunes import crear_mascara as mascara
 
 def imagen_jugador():
     xwing = carga("assets/sprites/jugador.png" , 0.05)
@@ -13,3 +14,8 @@ def procesar_movimiento(mov_x, mov_y, velocidad):
     if teclas[pygame.K_UP]:    mov_y -= velocidad
     if teclas[pygame.K_DOWN]:  mov_y += velocidad
     return mov_x, mov_y
+
+
+def mascara_jugador(jugador):
+    mask = mascara(jugador)
+    return mask

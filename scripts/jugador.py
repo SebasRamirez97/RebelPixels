@@ -19,3 +19,24 @@ def procesar_movimiento(mov_x, mov_y, velocidad):
 def mascara_jugador(jugador):
     mask = mascara(jugador)
     return mask
+
+
+# Lista de proyectiles
+proyectiles = []
+
+def disparar(jugador_x, jugador_y):
+    # Ajusta la posición inicial
+    proyectiles.append([jugador_x + 20, jugador_y])
+
+def actualizar_proyectiles(ventana):
+    for p in proyectiles[:]:
+        p[1] -= 7  # Velocidad hacia arriba
+        if p[1] < 0:
+            proyectiles.remove(p)
+        pygame.draw.rect(ventana, COLOR_PROYECTIL, (p[0], p[1], ANCHO_PROYECTIL, ALTO_PROYECTIL))
+        
+#Color proyectil
+COLOR_PROYECTIL = (150, 0, 255)
+ANCHO_PROYECTIL = 3
+ALTO_PROYECTIL = 6
+

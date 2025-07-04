@@ -20,4 +20,9 @@ def enemigos_destruidos(superficie, fuente, cantidad, color=(255, 255, 255), pos
     texto = fuente.render(f"Enemigos destruidos: {cantidad}", True, color)
     superficie.blit(texto, posicion)
     
-        
+def mostrar_pantalla_pausa(superficie, fuente, mensaje="PAUSA - Presioná 'P' para continuar", 
+                        color=(255, 255, 255), centro=(400, 300)):
+    texto = fuente.render(mensaje, True, color)
+    recto = texto.get_rect(center=centro)
+    superficie.blit(texto, recto)
+    pygame.display.flip()        

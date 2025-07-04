@@ -8,6 +8,8 @@ from scripts.escenarios import escenario_1 as esc_1
 from scripts.jugador import imagen_jugador as p_image
 from scripts.jugador import procesar_movimiento
 from scripts.jugador import mascara_jugador as p_mask
+from scripts.jugador import disparar, actualizar_proyectiles
+from scripts.funciones_comunes import mostrar_puntuacion, enemigos_destruidos
 
 pygame.init()
 
@@ -24,6 +26,10 @@ jugador_mask = p_mask(jugador_sprite)
 fondo = pygame.image.load("assets/sprites/fondo.png")
 fondo = pygame.transform.scale(fondo, (800, 600))
 
+#ventana puntaje
+score = 0
+contador_enemigos = 0
+font = pygame.font.Font(None, 26)
 
 jugador_x = 400 #posicion del jugador
 jugador_y = 500
@@ -50,10 +56,19 @@ while corriendo:
     
     # Dibuja el fondo sobre la ventana        
     ventana.blit(fondo, (0, 0))  
+
+    mostrar_puntuacion(ventana, font, score)
+    enemigos_destruidos(ventana, font, contador_enemigos)
     
-    
+    #Dibujar proyectiles
+    actualizar_proyectiles(ventana)
+
     #movimiento jugador
     jugador_x, jugador_y = procesar_movimiento(jugador_x, jugador_y, VELOCIDAD_JUGADOR)
+    # Movimiento de disparo
+    if pygame.key.get_pressed()[pygame.K_SPACE]:
+        disparar(jugador_x, jugador_y)
+
 
     #ESCENARIO 1
     aux_x += VELOCIDAD_X
@@ -62,7 +77,7 @@ while corriendo:
     y_inicial_squad += 1
     
     escuadrones_posiciones , fase = esc_1(3, caza, caza_mask, (150, y_inicial_squad),(150,150), 50, 200,ventana,
-                                          VELOCIDAD_X,jugador_x,jugador_y,jugador_mask,escuadrones_posiciones,fase)
+                                        VELOCIDAD_X,jugador_x,jugador_y,jugador_mask,escuadrones_posiciones,fase)
     if not any(escuadrones_posiciones):
         print("Escenario 1 destruido")
     
@@ -72,7 +87,6 @@ while corriendo:
     
     ventana.blit(jugador_sprite, (jugador_x, jugador_y))
 
-    
     pygame.display.flip()
     pygame.time.Clock().tick(60)
 

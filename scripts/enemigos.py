@@ -2,6 +2,7 @@ import pygame
 from .funciones_comunes import cargar_imagen as carga
 from .funciones_comunes import crear_mascara as mascara
 import math
+import random
 def imagenes_enemigos():
     caza = carga("assets/sprites/caza.png" , 0.07)
     bombardero = carga("assets/sprites/bombardero.png" , 0.08)
@@ -76,14 +77,19 @@ def entrada_varios_escuadrones(cantidad,nave,mask_nave,pos_inicial,pos_final,dis
     }
     return diccionario_situacion
 
-def batalla_varios_escuadrones(lista_escuadrones,velocidad_x,jugador_x,jugador_y,jugador_mask,ventana):
+def batalla_varios_escuadrones(lista_escuadrones,velocidad_x,jugador_x,jugador_y,jugador_mask,ventana,disparos_enemigos):
     nuevos_escuadrones = []
     for escuadron in lista_escuadrones:
         escuadron_vivo = []
         for nave in escuadron:
 
             nave["posicion"] = (nave["posicion"][0] + velocidad_x, nave["posicion"][1])
-
+            
+            if random.randint(1, 180) == 1:  # 1 en 180 chance
+                disparo = {"posicion": (nave["posicion"][0] + 34, nave["posicion"][1] + 30),
+                            "velocidad": 5}
+                disparos_enemigos.append(disparo)
+            
             offset = (int(nave["posicion"][0] - jugador_x), int(nave["posicion"][1] - jugador_y))
 
             if jugador_mask.overlap(nave["mask_nave"], offset):
@@ -94,7 +100,7 @@ def batalla_varios_escuadrones(lista_escuadrones,velocidad_x,jugador_x,jugador_y
                 escuadron_vivo.append(nave)
 
         nuevos_escuadrones.append(escuadron_vivo)
-    return nuevos_escuadrones
+    return nuevos_escuadrones , disparos_enemigos
 
 def crear_conjunto_mascaras(lista_superficies):
     lista_mascaras = []

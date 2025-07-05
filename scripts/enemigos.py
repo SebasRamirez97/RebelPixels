@@ -1,8 +1,10 @@
-import pygame
-from .funciones_comunes import cargar_imagen as carga
-from .funciones_comunes import crear_mascara as mascara
 import math
 import random
+
+from .funciones_comunes import cargar_imagen as carga
+from .funciones_comunes import crear_mascara as mascara
+from .funciones_comunes import generar_diccionario as diccionario
+
 def imagenes_enemigos():
     caza = carga("assets/sprites/caza.png" , 0.07)
     bombardero = carga("assets/sprites/bombardero.png" , 0.08)
@@ -11,22 +13,19 @@ def imagenes_enemigos():
     nodriza = carga("assets/sprites/nodriza.png" , 0.12)
     return [caza, bombardero, fragata, carrier, nodriza]
 
-def poscicion_poligonica(nave_central,escala, pos_nave_central, nave_vertice,cantidad,ventana,distancia,rotacion):
-    
-    ventana.blit(nave_central, pos_nave_central)
-    for i in range(cantidad):
-        angulo = 2 * math.pi * i / cantidad + rotacion
-        x = pos_nave_central[0]  + distancia * math.cos(angulo) + (1024 * escala)/4
-        y = pos_nave_central[1]  + distancia * math.sin(angulo) + (1024 * escala)/4
-        vertice = (x,y)
-        ventana.blit(nave_vertice,vertice)
+def crear_conjunto_mascaras(lista_superficies):
+    lista_mascaras = []
+    for superficie in lista_superficies:
+        mask = mascara(superficie)
+        lista_mascaras.append(mask)
+
+    return lista_mascaras
 
 def modificador_cordenada(pos_inicial,x,y):
     a = pos_inicial[0] + x
     b = pos_inicial[1] + y
 
     return (a,b)
-
 
 def escuadron(nave,mask_nave,pos_lider, distancia):
     
@@ -102,10 +101,125 @@ def batalla_varios_escuadrones(lista_escuadrones,velocidad_x,jugador_x,jugador_y
         nuevos_escuadrones.append(escuadron_vivo)
     return nuevos_escuadrones , disparos_enemigos
 
-def crear_conjunto_mascaras(lista_superficies):
-    lista_mascaras = []
-    for superficie in lista_superficies:
-        mask = mascara(superficie)
-        lista_mascaras.append(mask)
+def formacion_poligonica(nave_central,escala,mask_nave_central, pos_nave_central, nave_vertice,mask_nave_vertice,cantidad,distancia,rotacion):
+    
+    diccionario_nave_central = diccionario(nave_central,mask_nave_central,pos_nave_central)
+    
+    lista_diccionarios_poligomica = [diccionario_nave_central]
+    
+    for i in range(cantidad):
+        angulo = 2 * math.pi * i / cantidad + rotacion
+        x = pos_nave_central[0]  + distancia * math.cos(angulo) + (1024 * escala)/4
+        y = pos_nave_central[1]  + distancia * math.sin(angulo) + (1024 * escala)/4
+        pos_nave_vertice = (x,y)
+        diccionario_nave_vertice = diccionario(nave_vertice,mask_nave_vertice,pos_nave_vertice)
+        lista_diccionarios_poligomica.append(diccionario_nave_vertice)
+    
+    return lista_diccionarios_poligomica
 
-    return lista_mascaras
+def entrada_poligonica(nave_central, escala, mask_nave_central, pos_inicial_nave_central,
+                       pos_final_nave_central, nave_vertice, mask_nave_vertice,
+                       cantidad, distancia, rotacion, ventana):
+    
+    fase = "entrada"
+    posicion_central_poligonica = pos_inicial_nave_central
+
+    naves_poligomicas = formacion_poligonica(
+        nave_central, escala, mask_nave_central, posicion_central_poligonica,
+        nave_vertice, mask_nave_vertice, cantidad, distancia, rotacion
+    )
+
+    for nave in naves_poligomicas:
+        ventana.blit(nave["sprite_nave"], nave["posicion"])
+
+    if (pos_inicial_nave_central >= pos_final_nave_central):
+        fase = "batalla"
+        posicion_central_poligonica = pos_final_nave_central
+
+    nave_central_dict = diccionario(nave_central, mask_nave_central, posicion_central_poligonica)
+    diccionario_situacion = {
+        "fase": fase,
+        "posicion": posicion_central_poligonica,
+        "nave_central": nave_central_dict
+    }
+    return diccionario_situacion
+
+def inicializar_vertices_poligono(cantidad):
+    vertices = []
+    for i in range(cantidad):
+        vertice = {
+            "indice": i,
+            "viva": True,
+            # Podés agregar más propiedades si querés:
+            # "tipo_disparo": disparo_laser_rapido,
+            # "salud": 100,
+        }
+        vertices.append(vertice)
+    return vertices
+
+def batalla_poligomica(nave_central_dict, vertices_estado, escala, nave_vertice_sprite, mask_nave_vertice,
+                       distancia, rotacion, velocidad_x, velocidad_y,
+                       jugador_x, jugador_y, jugador_mask, ventana):
+
+    # Mover nave central
+    pos_central = nave_central_dict["posicion"]
+    nueva_pos_central = (pos_central[0] + velocidad_x, pos_central[1] + velocidad_y)
+    nave_central_dict["posicion"] = nueva_pos_central
+
+    # Dibujar nave central
+    ventana.blit(nave_central_dict["sprite_nave"],nave_central_dict["posicion"] )
+
+    # Dibujar vértices vivos
+    for vertice in vertices_estado:
+        if vertice["viva"]:
+            i = vertice["indice"]
+            angulo = 2 * math.pi * i / len(vertices_estado) + rotacion
+            x = nave_central_dict["posicion"][0] + distancia * math.cos(angulo) + (1024 * escala) / 4
+            y = nave_central_dict["posicion"][1] + distancia * math.sin(angulo) + (1024 * escala) / 4
+            pos = (x, y)
+
+            offset = (int(pos[0] - jugador_x), int(pos[1] - jugador_y))
+            if jugador_mask.overlap(mask_nave_vertice, offset):
+                print(f"💥 Colisión con vértice {i}")
+                vertice["viva"] = False
+            else:
+                ventana.blit(nave_vertice_sprite, pos)
+
+    return nave_central_dict, vertices_estado
+
+def trayectoria_cuadrada(posicion, direccion_actual, x_min, x_max, y_min, y_max):
+    x, y = posicion
+    velocidad_x = 0
+    velocidad_y = 0
+
+    if direccion_actual == "derecha":
+        velocidad_x = 5
+        velocidad_y = 0
+        if x >= x_max:
+            direccion_actual = "abajo"
+
+    elif direccion_actual == "abajo":
+        velocidad_x = 0
+        velocidad_y = 5
+        if y >= y_max:
+            direccion_actual = "izquierda"
+
+    elif direccion_actual == "izquierda":
+        velocidad_x = -5
+        velocidad_y = 0
+        if x <= x_min:
+            direccion_actual = "arriba"
+
+    elif direccion_actual == "arriba":
+        velocidad_x = 0
+        velocidad_y = -5
+        if y <= y_min:
+            direccion_actual = "derecha"
+
+    else:
+        # Por si dirección_actual tiene un valor inesperado
+        velocidad_x = 0
+        velocidad_y = 0
+        direccion_actual = "derecha"
+
+    return velocidad_x, velocidad_y, direccion_actual

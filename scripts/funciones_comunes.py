@@ -26,3 +26,11 @@ def mostrar_pantalla_pausa(superficie, fuente, mensaje="PAUSA - Presioná 'P' pa
     recto = texto.get_rect(center=centro)
     superficie.blit(texto, recto)
     pygame.display.flip()        
+
+def generar_diccionario(nave,mascara_nave,posicion_nave):
+    diccionario_nave = {
+            "posicion": posicion_nave,
+            "sprite_nave": nave,
+            "mask_nave": mascara_nave
+        }
+    return diccionario_nave

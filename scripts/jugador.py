@@ -26,8 +26,8 @@ proyectiles = []
 
 def disparar(jugador_x, jugador_y):
     # Ajusta la posición inicial
-    proyectiles.append([jugador_x + 20, jugador_y])
-
+    proyectiles.append([jugador_x + 5 , jugador_y+20])
+    proyectiles.append([jugador_x + 43, jugador_y+20])
 def actualizar_proyectiles(ventana):
     for p in proyectiles[:]:
         p[1] -= 7  # Velocidad hacia arriba
@@ -38,5 +38,5 @@ def actualizar_proyectiles(ventana):
 #Color proyectil
 COLOR_PROYECTIL = (150, 0, 255)
 ANCHO_PROYECTIL = 3
-ALTO_PROYECTIL = 6
+ALTO_PROYECTIL = 10
 

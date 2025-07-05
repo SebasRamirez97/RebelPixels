@@ -2,9 +2,10 @@ import pygame
 
 from scripts.enemigos import crear_conjunto_mascaras as e_mask
 from scripts.enemigos import imagenes_enemigos as e_image
-from scripts.enemigos import poscicion_poligonica as poligono
 from scripts.enemigos import varios_escuadrones as varios_squads
+from scripts.enemigos import trayectoria_cuadrada as cuadrada
 from scripts.escenarios import escenario_1 as esc_1
+from scripts.escenarios import escenario_2 as esc_2
 from scripts.jugador import imagen_jugador as p_image
 from scripts.jugador import procesar_movimiento
 from scripts.jugador import mascara_jugador as p_mask
@@ -47,6 +48,27 @@ escuadrones_posiciones_b = varios_squads(3, caza, caza_mask, (150, y_inicial_squ
 disparos_enemigos_a = []
 disparos_enemigos_b =[]
 
+#ESCENARIO 2
+fase_a_pol = "entrada"
+nave_central_dict_a = None
+vertices_estado_a = []
+y_inicial_pol_a = -480
+pos_central_a = (70,y_inicial_pol_a)
+direccion_actual_a = "Derecha"
+rot_a = 0
+velocidad_x_a = 0
+velocidad_y_a = 0
+
+fase_b_pol = "entrada"
+nave_central_dict_b = None
+vertices_estado_b = []
+y_inicial_pol_b = -210
+pos_central_b = (600,y_inicial_pol_b)
+direccion_actual_b = "Derecha"
+rot_b = 0
+velocidad_x_b = 0
+velocidad_y_b = 0
+
 pausa = False
 corriendo = True
 aux_x = 0
@@ -88,7 +110,9 @@ while corriendo:
         disparar(jugador_x, jugador_y)
     
     ventana.blit(jugador_sprite, (jugador_x, jugador_y))
+    
     #ESCENARIO 1
+    
     aux_x += VELOCIDAD_X
     if aux_x  > 200 or aux_x < 2:
         VELOCIDAD_X = -VELOCIDAD_X 
@@ -127,9 +151,32 @@ while corriendo:
         if nueva_y_b < ventana.get_height():
             disparos_actualizados_b.append({**disparo_b, "posicion": nueva_pos})
     disparos_enemigos_b = disparos_actualizados_b
-    #ventana.blit(p_image(),(400-25.6,300-25.6))#pegado de jugador en el fondo
     
-    
+    if(not any(escuadrones_posiciones_a)and not any(escuadrones_posiciones_b)):
+        #ESCENARIO 2
+            
+        velocidad_x_a, velocidad_y_a, direccion_actual_a = cuadrada(pos_central_a,direccion_actual_a,70,600,100,370)
+        y_inicial_pol_a += 2
+        rot_a += 0.05
+        pos_central_a, fase_a_pol, nave_central_dict_a, vertices_estado_a, disparos = esc_2(
+        fase_a_pol, nave_central_dict_a, vertices_estado_a,
+        fragata, 0.12, fragata_mask, (70,y_inicial_pol_a),
+        (70,100), caza, caza_mask, 6,
+        120, rot_a, velocidad_x_a, velocidad_y_a,
+        jugador_x, jugador_y, jugador_mask, ventana)  
+            
+        
+        velocidad_x_b, velocidad_y_b, direccion_actual_b = cuadrada(pos_central_b,direccion_actual_b,70,600,100,370)
+        y_inicial_pol_b += 2
+        rot_b += 0.05
+        pos_central_b, fase_b_pol, nave_central_dict_b, vertices_estado_b, disparos = esc_2(
+        fase_b_pol, nave_central_dict_b, vertices_estado_b,
+        fragata, 0.12, fragata_mask, (600,y_inicial_pol_b),
+        (600,370), caza, caza_mask, 6,
+        120, rot_b, velocidad_x_b, velocidad_y_b,
+        jugador_x, jugador_y, jugador_mask, ventana)
+        
+        
     pygame.display.flip()
     pygame.time.Clock().tick(60)
 

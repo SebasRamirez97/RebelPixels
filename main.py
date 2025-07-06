@@ -11,18 +11,27 @@ from scripts.jugador import procesar_movimiento
 from scripts.jugador import mascara_jugador as p_mask
 from scripts.jugador import disparar, actualizar_proyectiles
 from scripts.funciones_comunes import mostrar_puntuacion, enemigos_destruidos
-from scripts.funciones_comunes import mostrar_pantalla_pausa
+from scripts.funciones_comunes import mostrar_pantalla_pausa, mostrar_vidas
+from scripts.funciones_comunes import mostrar_pantalla_gameover
+from scripts.colisiones import detectar_colisiones, detectar_colisiones_vertices, detectar_colision_con_jugador
 
 pygame.init()
+pygame.mixer.init()
+
+from scripts import sonido
 
 ventana = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Ventana controlada")
+
+sonido.cargar_sonidos()
+#sonido.iniciar_musica()
+sonido_activado = True # Control de volumen
+
 (caza, bombardero, fragata, carrier, nodriza) = e_image()
 (caza, bombardero, fragata, carrier, nodriza) = e_image()
 (caza_mask, bombardero_mask, fragata_mask, carrier_mask, nodriza_mask) = e_mask(e_image())
 jugador_sprite = p_image()
 jugador_mask = p_mask(jugador_sprite)
-
 
 # Fondo de pantalla
 fondo = pygame.image.load("assets/sprites/fondo.png")
@@ -31,12 +40,19 @@ fondo = pygame.transform.scale(fondo, (800, 600))
 #ventana puntaje
 score = 0
 contador_enemigos = 0
+vidas = 3
+ultimo_golpe = 0
+cooldown_ms = 1000
 font = pygame.font.Font(None, 26)
 
-jugador_x = 400 #posicion del jugador
+#posicion del jugador
+jugador_x = 400 
 jugador_y = 500
 VELOCIDAD_JUGADOR = 5
 jugador_sprite = p_image()
+
+proyectiles = []
+proyectiles_jugador = []
 
 #ESCENARIO 1
 y_inicial_squad_a = -100
@@ -89,7 +105,17 @@ while corriendo:
         mostrar_pantalla_pausa(ventana, font)
         reloj.tick(60)
         continue
+    
+    if evento.type == pygame.KEYDOWN:
+        if evento.key == pygame.K_m:
+            sonido_activado = not sonido_activado  # Alternar entre True y False
 
+            if sonido_activado:
+                pygame.mixer.music.set_volume(0.5)
+                print("🔊 Sonido activado")
+            else:
+                pygame.mixer.music.set_volume(0)
+                print("🔇 Sonido silenciado")    
 
     # Acá se refresca la pantalla en cada ciclo, no por cada evento
     ventana.fill((50, 50, 50))  # Fondo gris
@@ -99,17 +125,46 @@ while corriendo:
 
     mostrar_puntuacion(ventana, font, score)
     enemigos_destruidos(ventana, font, contador_enemigos)
+    mostrar_vidas(ventana, font, vidas)
+    
     #movimiento jugador
     jugador_x, jugador_y = procesar_movimiento(jugador_x, jugador_y, VELOCIDAD_JUGADOR)
     
-    #Dibujar proyectiles
-    actualizar_proyectiles(ventana)
+    #Acrualizar y Dibujar proyectiles
+    actualizar_proyectiles(ventana, proyectiles_jugador)
+    
+    # Colisiones con enemigos escenario 1
+    destruidos = detectar_colisiones(proyectiles_jugador, escuadrones_posiciones_a, escuadrones_posiciones_b)
+    contador_enemigos += destruidos
+    score += destruidos * 100
+    if destruidos > 0 and sonido_activado:
+        sonido.reproducir_explosion()
+    
+    # Colisiones con enemigos y naves escenario 2
+    if fase_a_pol == "batalla":
+        destruidos_a = detectar_colisiones_vertices(proyectiles_jugador, vertices_estado_a, nave_central_dict_a, 120, rot_a)
+        contador_enemigos += destruidos_a
+        score += destruidos_a * 100
+        if destruidos_a > 0 and sonido_activado:
+            sonido.reproducir_explosion()    
+
+    if fase_b_pol == "batalla":
+        destruidos_b = destruidos_b = detectar_colisiones_vertices(proyectiles_jugador, vertices_estado_b, nave_central_dict_b, 120, rot_b)
+        contador_enemigos += destruidos_b
+        score += destruidos_b * 100
+        if destruidos_b > 0 and sonido_activado:
+            sonido.reproducir_explosion()
     
     # Movimiento de disparo
     if pygame.key.get_pressed()[pygame.K_SPACE]:
-        disparar(jugador_x, jugador_y)
+        disparar(jugador_x, jugador_y, proyectiles_jugador)
     
-    ventana.blit(jugador_sprite, (jugador_x, jugador_y))
+    if pygame.time.get_ticks() - ultimo_golpe < 1000:
+        herido = jugador_sprite.copy()
+        herido.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_ADD)
+        ventana.blit(herido, (jugador_x, jugador_y))
+    else:
+        ventana.blit(jugador_sprite, (jugador_x, jugador_y))
     
     #ESCENARIO 1
     
@@ -176,9 +231,26 @@ while corriendo:
         120, rot_b, velocidad_x_b, velocidad_y_b,
         jugador_x, jugador_y, jugador_mask, ventana)
         
-        
+    vidas, corriendo, ultimo_golpe = detectar_colision_con_jugador(disparos_enemigos_a + disparos_enemigos_b,
+    jugador_x, jugador_y, jugador_sprite, vidas, ultimo_golpe, 1000, sonido.reproducir_danio if sonido_activado else None)
+
+    if vidas <= 0:
+        mostrar_pantalla_gameover(ventana, font, score)
+
+        # Reiniciar variables recién después de ENTER
+        vidas = 3
+        score = 0
+        contador_enemigos = 0
+        jugador_x, jugador_y = 400, 500
+        proyectiles_jugador.clear()
+        escuadrones_posiciones_a.clear()
+        escuadrones_posiciones_b.clear()
+        fase_a_pol = "espera"
+        fase_b_pol = "espera"
+        ultimo_golpe = pygame.time.get_ticks()
+
+
     pygame.display.flip()
     pygame.time.Clock().tick(60)
 
 pygame.quit()
-

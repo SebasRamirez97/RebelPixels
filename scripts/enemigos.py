@@ -118,8 +118,8 @@ def formacion_poligonica(nave_central,escala,mask_nave_central, pos_nave_central
     return lista_diccionarios_poligomica
 
 def entrada_poligonica(nave_central, escala, mask_nave_central, pos_inicial_nave_central,
-                       pos_final_nave_central, nave_vertice, mask_nave_vertice,
-                       cantidad, distancia, rotacion, ventana):
+                    pos_final_nave_central, nave_vertice, mask_nave_vertice,
+                    cantidad, distancia, rotacion, ventana):
     
     fase = "entrada"
     posicion_central_poligonica = pos_inicial_nave_central
@@ -158,8 +158,8 @@ def inicializar_vertices_poligono(cantidad):
     return vertices
 
 def batalla_poligomica(nave_central_dict, vertices_estado, escala, nave_vertice_sprite, mask_nave_vertice,
-                       distancia, rotacion, velocidad_x, velocidad_y,
-                       jugador_x, jugador_y, jugador_mask, ventana):
+                    distancia, rotacion, velocidad_x, velocidad_y,
+                    jugador_x, jugador_y, jugador_mask, ventana):
 
     # Mover nave central
     pos_central = nave_central_dict["posicion"]

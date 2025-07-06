@@ -21,20 +21,23 @@ def mascara_jugador(jugador):
     return mask
 
 
-# Lista de proyectiles
-proyectiles = []
+def disparar(jugador_x, jugador_y, proyectiles):
+    proyectiles.append({
+        "rect": pygame.Rect(jugador_x + 5, jugador_y + 20, ANCHO_PROYECTIL, ALTO_PROYECTIL),
+        "surface": None  # O una imagen si tenés sprite para el láser
+    })
+    proyectiles.append({
+        "rect": pygame.Rect(jugador_x + 43, jugador_y + 20, ANCHO_PROYECTIL, ALTO_PROYECTIL),
+        "surface": None
+    })
 
-def disparar(jugador_x, jugador_y):
-    # Ajusta la posición inicial
-    proyectiles.append([jugador_x + 5 , jugador_y+20])
-    proyectiles.append([jugador_x + 43, jugador_y+20])
-def actualizar_proyectiles(ventana):
+def actualizar_proyectiles(ventana, proyectiles):
     for p in proyectiles[:]:
-        p[1] -= 7  # Velocidad hacia arriba
-        if p[1] < 0:
+        p["rect"].y -= 7
+        pygame.draw.rect(ventana, COLOR_PROYECTIL, p["rect"])  # O usás p["surface"] si tenés sprite
+        if p["rect"].bottom < 0:
             proyectiles.remove(p)
-        pygame.draw.rect(ventana, COLOR_PROYECTIL, (p[0], p[1], ANCHO_PROYECTIL, ALTO_PROYECTIL))
-        
+
 #Color proyectil
 COLOR_PROYECTIL = (150, 0, 255)
 ANCHO_PROYECTIL = 3

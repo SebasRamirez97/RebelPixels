@@ -59,7 +59,7 @@ proyectiles_jugador = []
 vuelta = 1
 puntaje_jugador = 0
 contador_enemigos = 0
-escenario = 1
+escenario = 3
 
 #ESCENARIO 1
 y_inicial_squad_a = -100
@@ -189,7 +189,7 @@ while corriendo:
     else:
         ventana.blit(jugador_sprite, (jugador_x, jugador_y))
     
-    match escenario
+    match escenario:
         case 1:
             #ESCENARIO 1
             aux_x += VELOCIDAD_X
@@ -262,12 +262,16 @@ while corriendo:
             
             #CARRIER A
             y_inicial_carrier_a += 2
-            fase_carrier_a, dict_carrier_a, nuevos_disparos_a= esc_3(fase_carrier_a,dict_carrier_a,carrier,carrier_mask,(100, y_inicial_carrier_a),(100, 100),jugador_x,jugador_y,jugador_mask,ventana,tick_actual,bombardero,bombardero_mask,5,cooldown_carrier_a,disparos_enemigos_a)
+            fase_carrier_a, dict_carrier_a, nuevos_disparos_a,puntaje_jugador,contador_enemigos= esc_3(fase_carrier_a,dict_carrier_a,carrier,
+                                                                                                       carrier_mask,(100, y_inicial_carrier_a),(100, 100),jugador_x,jugador_y,jugador_mask,proyectiles_jugador,puntaje_jugador,ventana,tick_actual,
+                                                                                                       bombardero,bombardero_mask,5,cooldown_carrier_a,disparos_enemigos_a,vuelta,contador_enemigos)
             disparos_enemigos_a = actualizar_y_dibujar_disparos(nuevos_disparos_a, ventana)
         
             #CARRIER B
             y_inicial_carrier_b += 2
-            fase_carrier_b, dict_carrier_b, nuevos_disparos_b= esc_3(fase_carrier_b,dict_carrier_b,carrier,carrier_mask,(546.6, y_inicial_carrier_b),(546.6, 100),jugador_x,jugador_y,jugador_mask,ventana,tick_actual,bombardero,bombardero_mask,5,cooldown_carrier_b,disparos_enemigos_b)
+            fase_carrier_b, dict_carrier_b, nuevos_disparos_b,puntaje_jugador, contador_enemigos= esc_3(fase_carrier_b,dict_carrier_b,carrier,
+                                                                                                        carrier_mask,(546.6, y_inicial_carrier_b),(546.6, 100),jugador_x,jugador_y,jugador_mask,proyectiles_jugador,
+                                                                                                        puntaje_jugador,ventana,tick_actual,bombardero,bombardero_mask,5,cooldown_carrier_b,disparos_enemigos_b,vuelta,contador_enemigos)
             disparos_enemigos_b = actualizar_y_dibujar_disparos(nuevos_disparos_b, ventana)
     
     vidas, corriendo, ultimo_golpe = detectar_colision_con_jugador(disparos_enemigos_a + disparos_enemigos_b,

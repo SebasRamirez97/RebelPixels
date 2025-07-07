@@ -59,8 +59,9 @@ def escenario_2(fase, nave_central_dict,disparos_central, vertices_estado,
 
 def escenario_3(fase, dict_carrier, carrier, carrier_mask, pos_inicial, pos_final,
                 jugador_x, jugador_y, jugador_mask,disparos_jugador,puntaje_jugador,ventana, tick_actual,
-                nave_tropa, nave_tropa_mask,cantidad, cooldown,disparos_enemigos,vuelta):
-
+                nave_tropa, nave_tropa_mask,cantidad, cooldown,disparos_enemigos, vuelta,contador_enemigos):
+    
+    nuevos_disparos = []
     if fase == "entrada":
         situacion = entrada_carrier(carrier, carrier_mask, pos_inicial, pos_final, ventana,vuelta)
         nueva_fase = situacion["fase"]
@@ -72,14 +73,15 @@ def escenario_3(fase, dict_carrier, carrier, carrier_mask, pos_inicial, pos_fina
             x, y = dict_carrier["posicion"]
             centro = (x + sprite.get_width() // 4 + 3, y + sprite.get_height()// 4)
 
-            formacion, destinos = crear_formacion_v(centro, cantidad, nave_tropa, nave_tropa_mask)
+            formacion, destinos = crear_formacion_v(centro, cantidad, nave_tropa, nave_tropa_mask,vuelta)
             dict_carrier["lista_naves"] = formacion
             dict_carrier["formacion_destinos"] = destinos
 
         fase = nueva_fase
 
     elif fase == "batalla":
-        dict_carrier, nuevos_disparos,pungaje_jugador,contador_enemigos = batalla_carrier(dict_carrier, ventana, tick_actual,
-                                       nave_tropa, nave_tropa_mask, cooldown,nuevos_disparos,jugador_x,jugador_y,jugador_mask,disparos_jugador,puntaje_jugadpr,ventana,vuelta,contador_enemigos)
+        dict_carrier, nuevos_disparos,puntaje_jugador,contador_enemigos = batalla_carrier(dict_carrier, tick_actual,
+                                       nave_tropa, nave_tropa_mask, cooldown,disparos_enemigos,jugador_x,jugador_y,jugador_mask,
+                                       disparos_jugador,puntaje_jugador,ventana,vuelta,contador_enemigos)
 
     return fase, dict_carrier, nuevos_disparos, puntaje_jugador, contador_enemigos

@@ -338,7 +338,7 @@ def desplegar_nave(pos_inicial, destino,nave,mask_nave,vuelta):
     diccionario_nave["direccion"] = direccion
     return diccionario_nave
 
-def crear_formacion_v(centro_carrier, cantidad, nave, mask_nave):
+def crear_formacion_v(centro_carrier, cantidad, nave, mask_nave,vuelta):
     formacion = []
     destinos = []
     
@@ -346,7 +346,7 @@ def crear_formacion_v(centro_carrier, cantidad, nave, mask_nave):
         offset_x = (i - cantidad // 2) * 60
         offset_y = -abs(i - cantidad // 2) * 20
         destino = modificador_cordenada(centro_carrier, offset_x, offset_y+100)
-        diccionario_nave = desplegar_nave(centro_carrier, destino, nave, mask_nave)
+        diccionario_nave = desplegar_nave(centro_carrier, destino, nave, mask_nave,vuelta)
         formacion.append(diccionario_nave)
         destinos.append(destino)
     return formacion, destinos
@@ -362,14 +362,14 @@ def batalla_carrier(diccionario_carrier, tick_actual, nave_tropa, nave_tropa_mas
                 disparos_jugador.remove(disparo)
                 break
      
-    offset_carrier = (int(x - jugador_x), int(y - jugador_y))
+    offset_carrier = (int(x_carrier - jugador_x), int(y_carrier - jugador_y))
 
-    if jugador_mask.overlap(nave["mask_nave"], offset_nave):
+    if jugador_mask.overlap(diccionario_carrier["mask_nave"], offset_carrier):
         diccionario_carrier["vida"] -=10
     
     if diccionario_carrier["vida"] == 0:
         diccionario_carrier["estado"] = "destruido"
-        puntaje_jugador += diccionadio_carrier["puntaje"]
+        puntaje_jugador += diccionario_carrier["puntaje"]
         contador_enemigos += 1
         sonido.reproducir_explosion()
     else:
@@ -393,7 +393,7 @@ def batalla_carrier(diccionario_carrier, tick_actual, nave_tropa, nave_tropa_mas
             destinos_disponibles.append(destino)
 
     # Reponer si hay espacio y pasó el cooldown
-    if destinos_disponibles and tick_actual - diccionario_carrier["ultimo_tick"] >= cooldown and carrier["estado"] == "activo":
+    if destinos_disponibles and tick_actual - diccionario_carrier["ultimo_tick"] >= cooldown and diccionario_carrier["estado"] == "activo":
         destino = destinos_disponibles[0]
         centro = (x_carrier + sprite_carrier.get_width() // 4 + 3, y_carrier + sprite_carrier.get_height()//4)
         nueva_nave = desplegar_nave(centro, destino, nave_tropa, nave_tropa_mask,vuelta)
@@ -437,7 +437,7 @@ def batalla_carrier(diccionario_carrier, tick_actual, nave_tropa, nave_tropa_mas
 
         if jugador_mask.overlap(nave["mask_nave"], offset_nave):
             nave["vida"] -=10
-        if nave["vida" == 0:
+        if nave["vida"] == 0:
             print("💥 Nave destruida")
             nave["estado"] = "destruida"
             puntaje_jugador += nave["puntaje"]

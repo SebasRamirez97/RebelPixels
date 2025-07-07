@@ -2,53 +2,84 @@ from scripts.enemigos import entrada_varios_escuadrones as entrada_escuadrones
 from scripts.enemigos import batalla_varios_escuadrones as batalla_escuadrones
 from scripts.enemigos import entrada_poligonica 
 from scripts.enemigos import batalla_poligomica
-from scripts.enemigos import inicializar_vertices_poligono as inicializar_vertices
-
+from .enemigos import entrada_varios_escuadrones as entrada_escuadrones
+from .enemigos import batalla_varios_escuadrones as batalla_escuadrones
+from .enemigos import entrada_poligonica 
+from .enemigos import batalla_poligomica
+from .enemigos import entrada_carrier
+from .enemigos import batalla_carrier
+from .enemigos import crear_formacion_v
 def escenario_1(cantidad,nave,mask_nave,pos_inicial,pos_final,distancia_naves,distancia_squad,ventana,
-                velocidad_x,jugador_x,jugador_y,jugador_mask,escuadrones_posiciones,fase,disparos):
+                velocidad_x,jugador_x,jugador_y,jugador_mask,proyectiles_jugador,puntaje_jugador,escuadrones_posiciones,fase,disparos,vuelta,contador_enemigos):
     disparos_nuevos = []
     if fase == "entrada":
 
-        situacion = entrada_escuadrones(cantidad, nave, mask_nave, pos_inicial,pos_final, distancia_naves, distancia_squad,ventana)
+        situacion = entrada_escuadrones(cantidad, nave, mask_nave, pos_inicial,pos_final, distancia_naves, distancia_squad,ventana,vuelta)
         fase = situacion["fase"]
-        escuadrones_posiciones = situacion["escuadrones_posiciones"]
+        escuadrones_posiciones = situacion["lista_escuadrones"]
     elif fase == "batalla":
         
-        nuevos_escuadrones = batalla_escuadrones(escuadrones_posiciones,velocidad_x,jugador_x,jugador_y,jugador_mask,ventana,disparos)
+        nuevos_escuadrones = batalla_escuadrones(escuadrones_posiciones,velocidad_x,jugador_x,jugador_y,jugador_mask,proyectiles_jugador,puntaje_jugador,ventana,disparos,contador_enemigos)
         
-        escuadrones_posiciones, disparos_nuevos = nuevos_escuadrones
+        escuadrones_posiciones, disparos_nuevos ,puntaje_jugador,contador_enemigos= nuevos_escuadrones
 
 
-    return escuadrones_posiciones , fase, disparos_nuevos
+    return escuadrones_posiciones , fase, disparos_nuevos, puntaje_jugador,contador_enemigos
 
-def escenario_2(fase, nave_central_dict, vertices_estado,
+def escenario_2(fase, nave_central_dict,disparos_central, vertices_estado,
                 nave_central_sprite, escala, mask_nave_central, nave_central_pos_inicial,
                 nave_central_pos_final, nave_vertice_sprite, mask_nave_vertice, cantidad,
                 distancia, rotacion, velocidad_x, velocidad_y,
-                jugador_x, jugador_y, jugador_mask, ventana):
-
-    disparos_nuevos = []
+                jugador_x, jugador_y, jugador_mask,disparos_jugador,puntaje_jugador, ventana,vuelta,contador_enemigos):
+    
+    nuevos_disparos_central= []
 
     if fase == "entrada":
         situacion = entrada_poligonica(
             nave_central_sprite, escala, mask_nave_central,
             nave_central_pos_inicial, nave_central_pos_final,
             nave_vertice_sprite, mask_nave_vertice,
-            cantidad, distancia, rotacion, ventana
+            cantidad, distancia, rotacion, ventana,vuelta
         )
         fase = situacion["fase"]
         nave_central_dict = situacion["nave_central"]
 
         if fase == "batalla":
-            vertices_estado = inicializar_vertices(cantidad)
+            vertices_estado = situacion["vertices"]
 
     elif fase == "batalla":
-        nave_central_dict, vertices_estado = batalla_poligomica(
-            nave_central_dict, vertices_estado, escala,
+        nave_central_dict, vertices_estado, nuevos_disparos_central,puntaje_jugador,contador_enemigos= batalla_poligomica(
+            nave_central_dict,disparos_central, vertices_estado, escala,
             nave_vertice_sprite, mask_nave_vertice,
             distancia, rotacion, velocidad_x, velocidad_y,
-            jugador_x, jugador_y, jugador_mask, ventana
+            jugador_x, jugador_y, jugador_mask,disparos_jugador,puntaje_jugador, ventana,contador_enemigos
         )
 
-    return nave_central_dict["posicion"], fase, nave_central_dict, vertices_estado, disparos_nuevos
+    return nave_central_dict["posicion"], fase, nave_central_dict, vertices_estado, nuevos_disparos_central ,puntaje_jugador,contador_enemigos
 
+def escenario_3(fase, dict_carrier, carrier, carrier_mask, pos_inicial, pos_final,
+                jugador_x, jugador_y, jugador_mask, ventana, tick_actual,
+                nave_tropa, nave_tropa_mask,cantidad, cooldown,nuevos_disparos):
+
+    if fase == "entrada":
+        situacion = entrada_carrier(carrier, carrier_mask, pos_inicial, pos_final, ventana)
+        nueva_fase = situacion["fase"]
+        dict_carrier = situacion["carrier"]
+
+        # Si cambia a batalla, generar formación inicial
+        if nueva_fase == "batalla":
+            sprite = dict_carrier["sprite_nave"]
+            x, y = dict_carrier["posicion"]
+            centro = (x + sprite.get_width() // 4 + 3, y + sprite.get_height()// 4)
+
+            formacion, destinos = crear_formacion_v(centro, cantidad, nave_tropa, nave_tropa_mask)
+            dict_carrier["lista_naves"] = formacion
+            dict_carrier["formacion_destinos"] = destinos
+
+        fase = nueva_fase
+
+    elif fase == "batalla":
+        dict_carrier, nuevos_disparos = batalla_carrier(dict_carrier, ventana, tick_actual,
+                                       nave_tropa, nave_tropa_mask, cooldown,nuevos_disparos,jugador_x,jugador_y,jugador_mask)
+
+    return fase, dict_carrier, nuevos_disparos

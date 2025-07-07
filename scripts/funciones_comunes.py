@@ -32,12 +32,26 @@ def mostrar_pantalla_pausa(superficie, fuente, mensaje="PAUSA - Presioná 'P' pa
     superficie.blit(texto, recto)
     pygame.display.flip()        
 
-def generar_diccionario(nave,mascara_nave,posicion_nave):
+def generar_diccionario(nave, mascara_nave, posicion_nave):
     diccionario_nave = {
-            "posicion": posicion_nave,
-            "sprite_nave": nave,
-            "mask_nave": mascara_nave
-        }
+        "posicion": posicion_nave,
+        "sprite_nave": nave,
+        "mask_nave": mascara_nave,
+        "vida": 100,
+        "velocidad": 0,
+        "destino": None,
+        "estado": "destruido",
+        #Para poligono
+        "indice": 0,
+        "kamikaze": 0,
+        "ultimo_tick": 0,
+        "rafaga": False,
+        "disparos_rafaga": 0,
+        #Para Carrier
+        "lista_naves": [],
+        "lista_destinos":[],
+        "direccion": (0, 0)
+    }
     return diccionario_nave
 
 def mostrar_pantalla_gameover(ventana, font, score):
@@ -65,4 +79,19 @@ def mostrar_pantalla_gameover(ventana, font, score):
                     pygame.quit()
                     exit()
 
-
+def generar_diccionario(nave, mascara_nave, posicion_nave):
+    diccionario_nave = {
+        "posicion": posicion_nave,
+        "sprite_nave": nave,
+        "mask_nave": mascara_nave,
+        "vida": 100,
+        "lista_naves": [],
+        "lista_destinos":[],
+        "ultimo_tick": 0,
+        "direccion": (0, 0),
+        "velocidad": 0,
+        "kamikaze": 0,
+        "destino": None,
+        "estado": "destruido"
+    }
+    return diccionario_nave

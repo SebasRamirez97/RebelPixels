@@ -212,6 +212,8 @@ while corriendo:
     
             if(not any(escuadrones_posiciones_a)and not any(escuadrones_posiciones_b)):
                 escenario = 2
+                fase_a = "entrada"
+                fase_b = "entrada"
         
         case 2:
             #ESCENARIO 2

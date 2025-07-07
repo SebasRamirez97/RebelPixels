@@ -207,7 +207,7 @@ while corriendo:
         y_inicial_pol_a += 2
         rot_a += 0.05
     
-        pos_central_a, fase_a_pol, nave_central_dict_a, vertices_estado_a, nuevos_disparos_central_a,puntaje_jugador,contador_enemigos = esc_2(
+        pos_central_a, fase_a_pol, nave_central_dict_a, vertices_estado_a, nuevos_disparos_central_a,puntaje_jugador,contador_enemigos,vertices_vivos_a,estado_central_a = esc_2(
         fase_a_pol, nave_central_dict_a,disparos_central_a, vertices_estado_a,
         fragata, 0.12, fragata_mask, (70,y_inicial_pol_a),
         (70,100), caza, caza_mask, 6,
@@ -219,7 +219,7 @@ while corriendo:
         velocidad_x_b, velocidad_y_b, direccion_actual_b = cuadrada(pos_central_b,direccion_actual_b,70,600,100,370)
         y_inicial_pol_b += 2
         rot_b += 0.05
-        pos_central_b, fase_b_pol, nave_central_dict_b, vertices_estado_b, nuevos_disparos_central_b,puntaje_jugador,contador_enemigos = esc_2(
+        pos_central_b, fase_b_pol, nave_central_dict_b, vertices_estado_b, nuevos_disparos_central_b,puntaje_jugador,contador_enemigos,vertices_vivos_b,estado_central_b = esc_2(
         fase_b_pol, nave_central_dict_b,disparos_central_b, vertices_estado_b,
         fragata, 0.12, fragata_mask, (600,y_inicial_pol_b),
         (600,370), caza, caza_mask, 6,
@@ -229,7 +229,7 @@ while corriendo:
         disparos_central_b = actualizar_y_dibujar_disparos(nuevos_disparos_central_b, ventana)
     #
         #ESCENARIO 3
-        if nave_central_dict_a["estado"] == "destruido" and nave_central_dict_b["estado"] == "destruido" and not any(vertices_estado_a) and not any(vertices_estado_b):
+        if estado_central_a == "destruido" and estado_central_b == "destruido" and  (vertices_vivos_a + vertices_vivos_b) == 0:
             #CARRIER A
             y_inicial_carrier += 2
             tick_actual = pygame.time.get_ticks()

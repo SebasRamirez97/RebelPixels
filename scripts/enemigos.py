@@ -305,6 +305,10 @@ def entrada_carrier(carrier,mask_carrier,pos_inicial_carrier,pos_final_carrier,v
         pos_actual = pos_final_carrier
 
     diccionario_carrier = diccionario(carrier,mask_carrier,pos_actual)
+    diccionario_carrier["estado"] = "activo"
+    diccionario_carrier["vida"] = 600*vuelta
+    diccionario_carrier["puntaje"] = 700*vuelta
+    
     diccionario_carrier_situacion = {
         "fase": fase,
         "carrier": diccionario_carrier
@@ -312,10 +316,11 @@ def entrada_carrier(carrier,mask_carrier,pos_inicial_carrier,pos_final_carrier,v
 
     return diccionario_carrier_situacion
 
-def desplegar_nave(pos_inicial, destino,nave,mask_nave):
+def desplegar_nave(pos_inicial, destino,nave,mask_nave,vuelta):
     
     diccionario_nave = diccionario(nave, mask_nave, pos_inicial)
-    
+    diccionario_nave["vida"] = 300*vuelta
+    diccionario_nave["puntaje"] = 50*vuelta
     diccionario_nave["velocidad"] = 2
     diccionario_nave["destino"] = destino  # para saber cuándo detenerse
     diccionario_nave["estado"] = "activo"
@@ -345,19 +350,36 @@ def crear_formacion_v(centro_carrier, cantidad, nave, mask_nave):
         destinos.append(destino)
     return formacion, destinos
 
-def batalla_carrier(diccionario_carrier, ventana, tick_actual, nave_tropa, nave_tropa_mask, cooldown,disparos_enemigos,jugador_x,jugador_y,jugador_mask):
+def batalla_carrier(diccionario_carrier, tick_actual, nave_tropa, nave_tropa_mask, cooldown,disparos_enemigos,jugador_x,jugador_y,jugador_mask,disparos_jugador,puntaje_jugador,ventana,vuelta,contador_enemigos):
     # Dibujar el carrier
-    sprite = diccionario_carrier["sprite_nave"]
-    x, y = diccionario_carrier["posicion"]
-    ventana.blit(sprite, (x, y))
+    sprite_carrier = diccionario_carrier["sprite_nave"]
+    x_carrier, y_carrier = diccionario_carrier["posicion"]
+
+    for disparo in disparos_jugador[:]:
+            if disparo["rect"].colliderect(pygame.Rect(x_carrier, y_carrier, 160, 160)):
+                diccionario_carrier["vida"] -= 5
+                disparos_jugador.remove(disparo)
+                break
+     
+    offset_carrier = (int(x - jugador_x), int(y - jugador_y))
+
+    if jugador_mask.overlap(nave["mask_nave"], offset_nave):
+        diccionario_carrier["vida"] -=10
+    
+    if diccionario_carrier["vida"] == 0:
+        diccionario_carrier["estado"] = "destruido"
+        puntaje_jugador += diccionadio_carrier["puntaje"]
+        contador_enemigos += 1
+    else:
+        ventana.blit(sprite_carrier, (x_carrier, y_carrier))
 
     # Verificar qué cazas siguen activas
-    cazas_activas = []
+    naves_activas = []
     destinos_ocupados = []
 
-    for caza in diccionario_carrier["lista_naves"]:
-        if caza["estado"] in ("activo", "detenida"):
-            cazas_activas.append(caza)
+    for nave in diccionario_carrier["lista_naves"]:
+        if nave["estado"] in ("activo", "detenida"):
+            naves_activas.append(naves)
             destinos_ocupados.append(caza["destino"])
 
     diccionario_carrier["lista_naves"] = cazas_activas
@@ -369,31 +391,31 @@ def batalla_carrier(diccionario_carrier, ventana, tick_actual, nave_tropa, nave_
             destinos_disponibles.append(destino)
 
     # Reponer si hay espacio y pasó el cooldown
-    if destinos_disponibles and tick_actual - diccionario_carrier["ultimo_tick"] >= cooldown:
+    if destinos_disponibles and tick_actual - diccionario_carrier["ultimo_tick"] >= cooldown and carrier["estado"] == "activo":
         destino = destinos_disponibles[0]
-        centro = (x + sprite.get_width() // 4 + 3, y + sprite.get_height()//4)
-        nueva_nave = desplegar_nave(centro, destino, nave_tropa, nave_tropa_mask)
+        centro = (x_carrier + sprite_carrier.get_width() // 4 + 3, y_carrier + sprite_carrier.get_height()//4)
+        nueva_nave = desplegar_nave(centro, destino, nave_tropa, nave_tropa_mask,vuelta)
         diccionario_carrier["lista_naves"].append(nueva_nave)
         diccionario_carrier["ultimo_tick"] = tick_actual
 
     # Mover y dibujar las cazas activas
-    for caza in diccionario_carrier["lista_naves"]:
-        if caza["estado"] == "activo":
-            dx, dy = caza["direccion"]
-            nueva_pos = modificador_cordenada(caza["posicion"], dx * caza["velocidad"], dy * caza["velocidad"])
-            caza["posicion"] = nueva_pos
+    for nave in diccionario_carrier["lista_naves"]:
+        if nave["estado"] == "activo":
+            dx, dy = nave["direccion"]
+            nueva_pos = modificador_cordenada(nave["posicion"], dx * nave["velocidad"], dy * nave["velocidad"])
+            nave["posicion"] = nueva_pos
 
             # Verificar si llegó al destino (con tolerancia)
             px, py = nueva_pos
-            destino_x, destino_y = caza["destino"]
+            destino_x, destino_y = nave["destino"]
             distancia = math.hypot(destino_x - px, destino_y - py)
 
             if distancia < 1.0:
-                caza["posicion"] = (destino_x, destino_y)
-                caza["direccion"] = (0, 0)
-                caza["estado"] = "detenida"
+                nave["posicion"] = (destino_x, destino_y)
+                nave["direccion"] = (0, 0)
+                nave["estado"] = "detenida"
 
-        ventana.blit(caza["sprite_nave"], caza["posicion"])
+        ventana.blit(nave["sprite_nave"], nave["posicion"])
     #disparos y colisiones
     
     for nave in diccionario_carrier["lista_naves"]:
@@ -402,12 +424,24 @@ def batalla_carrier(diccionario_carrier, ventana, tick_actual, nave_tropa, nave_
             disparo2 = crear_disparo("misil", nave["posicion"][0] + 46, nave["posicion"][1] + 50,jugador_x,jugador_y)
                 
             disparos_enemigos.extend([disparo1, disparo2])
-                
-        offset = (int(nave["posicion"][0] - jugador_x), int(nave["posicion"][1] - jugador_y))
 
-        if jugador_mask.overlap(nave["mask_nave"], offset):
+        for disparo in disparos_jugador[:]:
+            if disparo["rect"].colliderect(pygame.Rect(nave["posicion"][0], nave["posicion"][1], 60, 60)):
+                nave["vida"] -= 5
+                disparos_jugador.remove(disparo)
+                break
+                
+        offset_nave = (int(nave["posicion"][0] - jugador_x), int(nave["posicion"][1] - jugador_y))
+
+        if jugador_mask.overlap(nave["mask_nave"], offset_nave):
+            nave["vida"] -=10
+        if nave["vida" == 0:
             print("💥 Nave destruida")
             nave["estado"] = "destruida"
-            # Acá podrías agregar explosión o sonido
+            puntaje_jugador += nave["puntaje"]
+            contador_enemigos += 1
             
-    return diccionario_carrier, disparos_enemigos
+            # Acá podrías agregar explosión o sonido
+    
+            
+    return diccionario_carrier, disparos_enemigos, puntaje_jugador, contador_enemigos

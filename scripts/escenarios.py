@@ -48,14 +48,14 @@ def escenario_2(fase, nave_central_dict,disparos_central, vertices_estado,
             vertices_estado = situacion["vertices"]
 
     elif fase == "batalla":
-        nave_central_dict, vertices_estado, nuevos_disparos_central,puntaje_jugador,contador_enemigos= batalla_poligomica(
+        nave_central_dict, vertices_estado, nuevos_disparos_central,puntaje_jugador,contador_enemigos,vertices_vivos,estado_nave_central= batalla_poligomica(
             nave_central_dict,disparos_central, vertices_estado, escala,
             nave_vertice_sprite, mask_nave_vertice,
             distancia, rotacion, velocidad_x, velocidad_y,
             jugador_x, jugador_y, jugador_mask,disparos_jugador,puntaje_jugador, ventana,contador_enemigos
         )
 
-    return nave_central_dict["posicion"], fase, nave_central_dict, vertices_estado, nuevos_disparos_central ,puntaje_jugador,contador_enemigos
+    return nave_central_dict["posicion"], fase, nave_central_dict, vertices_estado, nuevos_disparos_central ,puntaje_jugador,contador_enemigos,vertices_vivos,estado_nave_central
 
 def escenario_3(fase, dict_carrier, carrier, carrier_mask, pos_inicial, pos_final,
                 jugador_x, jugador_y, jugador_mask, ventana, tick_actual,

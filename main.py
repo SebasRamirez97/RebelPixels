@@ -95,11 +95,18 @@ velocidad_y_b = 0
 disparos_central_b = []
 
 # ESCENARIO 3
-fase_carrier = "entrada"
-y_inicial_carrier = -20
-dict_carrier = None
-cooldown_carrier = 1000
-disparos_enemigos = []
+fase_carrier_a = "entrada"
+y_inicial_carrier_a = -20
+dict_carrier_a = None
+cooldown_carrier_a = 1000
+disparos_enemigos_a = []
+
+# ESCENARIO 3
+fase_carrier_b = "entrada"
+y_inicial_carrier_b = -20
+dict_carrier_b = None
+cooldown_carrier_b = 1000
+disparos_enemigos_b = []
 
 pausa = False
 corriendo = True
@@ -249,13 +256,17 @@ while corriendo:
             
         case 3:
             #ESCENARIO 3
-        
-            #CARRIER A
-            y_inicial_carrier += 2
             tick_actual = pygame.time.get_ticks()
-            fase_carrier, dict_carrier, nuevos_disparos= esc_3(fase_carrier,dict_carrier,carrier,carrier_mask,(100, y_inicial_carrier),(100, 100),jugador_x,jugador_y,jugador_mask,ventana,tick_actual,bombardero,bombardero_mask,5,cooldown_carrier,disparos_enemigos)
-            disparos_enemigos = actualizar_y_dibujar_disparos(nuevos_disparos, ventana)
-
+            
+            #CARRIER A
+            y_inicial_carrier_a += 2
+            fase_carrier_a, dict_carrier_a, nuevos_disparos_a= esc_3(fase_carrier_a,dict_carrier_a,carrier,carrier_mask,(100, y_inicial_carrier_a),(100, 100),jugador_x,jugador_y,jugador_mask,ventana,tick_actual,bombardero,bombardero_mask,5,cooldown_carrier_a,disparos_enemigos_a)
+            disparos_enemigos_a = actualizar_y_dibujar_disparos(nuevos_disparos_a, ventana)
+        
+            #CARRIER B
+            y_inicial_carrier_b += 2
+            fase_carrier_b, dict_carrier_b, nuevos_disparos_b= esc_3(fase_carrier_b,dict_carrier_b,carrier,carrier_mask,(546.6, y_inicial_carrier_b),(546.6, 100),jugador_x,jugador_y,jugador_mask,ventana,tick_actual,bombardero,bombardero_mask,5,cooldown_carrier_b,disparos_enemigos_b)
+            disparos_enemigos_b = actualizar_y_dibujar_disparos(nuevos_disparos_b, ventana)
     
     vidas, corriendo, ultimo_golpe = detectar_colision_con_jugador(disparos_enemigos_a + disparos_enemigos_b,
     jugador_x, jugador_y, jugador_sprite, vidas, ultimo_golpe, 1000, sonido.reproducir_danio if sonido_activado else None)

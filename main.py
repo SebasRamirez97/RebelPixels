@@ -230,6 +230,17 @@ while corriendo:
     #
         #ESCENARIO 3
         if estado_central_a == "destruido" and estado_central_b == "destruido" and  (vertices_vivos_a + vertices_vivos_b) == 0:
+            fase_a_pol = "entrada"
+            fase_b_pol = "entrada"
+            y_inicial_pol_a = 0
+            y_inicial_pol_b = 0
+            rot_a = 0
+            rot_b = 0
+            nave_central_dict_a = {}  
+            nave_central_dict_b = {}
+            vertices_estado_a = []
+            vertices_estado_b = []
+            #PENDIENTE CREAR FUNCION RESET_POLIGONICA EN ENEMIGOS
             #CARRIER A
             y_inicial_carrier += 2
             tick_actual = pygame.time.get_ticks()

@@ -59,6 +59,7 @@ proyectiles_jugador = []
 vuelta = 1
 puntaje_jugador = 0
 contador_enemigos = 0
+escenario = 1
 
 #ESCENARIO 1
 y_inicial_squad_a = -100
@@ -180,67 +181,75 @@ while corriendo:
         ventana.blit(herido, (jugador_x, jugador_y))
     else:
         ventana.blit(jugador_sprite, (jugador_x, jugador_y))
-    #ESCENARIO 1
     
-    aux_x += VELOCIDAD_X
-    if aux_x  > 150 or aux_x < 2:
-        VELOCIDAD_X = -VELOCIDAD_X
+    match escenario
+        case 1:
+            #ESCENARIO 1
+            aux_x += VELOCIDAD_X
+            if aux_x  > 150 or aux_x < 2:
+                VELOCIDAD_X = -VELOCIDAD_X
 
-    #Escuadron A
-    y_inicial_squad_a += 1
-    escuadrones_posiciones_a , fase_a , nuevos_disparos_a, puntaje_jugador, contador_enemigos = esc_1(3, caza, caza_mask, (150, y_inicial_squad_a),(150,100), 50, 200,ventana,
-    VELOCIDAD_X,jugador_x,jugador_y,jugador_mask,proyectiles_jugador,puntaje_jugador,escuadrones_posiciones_a,fase_a,disparos_enemigos_a,vuelta,contador_enemigos)
+            #Escuadron A
+            y_inicial_squad_a += 1
+            escuadrones_posiciones_a , fase_a , nuevos_disparos_a, puntaje_jugador, contador_enemigos = esc_1(3, caza, caza_mask, (150, y_inicial_squad_a),(150,100), 50, 200,ventana,
+            VELOCIDAD_X,jugador_x,jugador_y,jugador_mask,proyectiles_jugador,puntaje_jugador,escuadrones_posiciones_a,fase_a,disparos_enemigos_a,vuelta,contador_enemigos)
     
-    disparos_enemigos_a = actualizar_y_dibujar_disparos(nuevos_disparos_a, ventana)
+            disparos_enemigos_a = actualizar_y_dibujar_disparos(nuevos_disparos_a, ventana)
 
-    #Escuadron B
-    y_inicial_squad_b += 1
-    escuadrones_posiciones_b , fase_b , nuevos_disparos_b,puntaje_jugador,contador_enemigos = esc_1(3, caza, caza_mask, (150, y_inicial_squad_b),(150,200), 50, 200,ventana,
+            #Escuadron B
+            y_inicial_squad_b += 1
+            escuadrones_posiciones_b , fase_b , nuevos_disparos_b,puntaje_jugador,contador_enemigos = esc_1(3, caza, caza_mask, (150, y_inicial_squad_b),(150,200), 50, 200,ventana,
                                                                                                     VELOCIDAD_X,jugador_x,jugador_y,jugador_mask,proyectiles_jugador,puntaje_jugador,escuadrones_posiciones_b,fase_b,disparos_enemigos_b,vuelta,contador_enemigos)
 
-    disparos_enemigos_b = actualizar_y_dibujar_disparos(nuevos_disparos_b, ventana)
+            disparos_enemigos_b = actualizar_y_dibujar_disparos(nuevos_disparos_b, ventana)
     
-    if(not any(escuadrones_posiciones_a)and not any(escuadrones_posiciones_b)):
-       #ESCENARIO 2
+            if(not any(escuadrones_posiciones_a)and not any(escuadrones_posiciones_b)):
+                escenario = 2
+        
+        case 2:
+            #ESCENARIO 2
             
-        velocidad_x_a, velocidad_y_a, direccion_actual_a = cuadrada(pos_central_a,direccion_actual_a,70,600,100,370)
-        y_inicial_pol_a += 2
-        rot_a += 0.05
+            velocidad_x_a, velocidad_y_a, direccion_actual_a = cuadrada(pos_central_a,direccion_actual_a,70,600,100,370)
+            y_inicial_pol_a += 2
+            rot_a += 0.05
     
-        pos_central_a, fase_a_pol, nave_central_dict_a, vertices_estado_a, nuevos_disparos_central_a,puntaje_jugador,contador_enemigos,vertices_vivos_a,estado_central_a = esc_2(
-        fase_a_pol, nave_central_dict_a,disparos_central_a, vertices_estado_a,
-        fragata, 0.12, fragata_mask, (70,y_inicial_pol_a),
-        (70,100), caza, caza_mask, 6,
-        120, rot_a, velocidad_x_a, velocidad_y_a,
-        jugador_x, jugador_y, jugador_mask,proyectiles_jugador,puntaje_jugador, ventana,vuelta,contador_enemigos)  
+            pos_central_a, fase_a_pol, nave_central_dict_a, vertices_estado_a, nuevos_disparos_central_a,puntaje_jugador,contador_enemigos,vertices_vivos_a,estado_central_a = esc_2(
+            fase_a_pol, nave_central_dict_a,disparos_central_a, vertices_estado_a,
+            fragata, 0.12, fragata_mask, (70,y_inicial_pol_a),
+            (70,100), caza, caza_mask, 6,
+            120, rot_a, velocidad_x_a, velocidad_y_a,
+            jugador_x, jugador_y, jugador_mask,proyectiles_jugador,puntaje_jugador, ventana,vuelta,contador_enemigos)  
     
-        disparos_central_a = actualizar_y_dibujar_disparos(nuevos_disparos_central_a, ventana)   
+            disparos_central_a = actualizar_y_dibujar_disparos(nuevos_disparos_central_a, ventana)   
     
-        velocidad_x_b, velocidad_y_b, direccion_actual_b = cuadrada(pos_central_b,direccion_actual_b,70,600,100,370)
-        y_inicial_pol_b += 2
-        rot_b += 0.05
-        pos_central_b, fase_b_pol, nave_central_dict_b, vertices_estado_b, nuevos_disparos_central_b,puntaje_jugador,contador_enemigos,vertices_vivos_b,estado_central_b = esc_2(
-        fase_b_pol, nave_central_dict_b,disparos_central_b, vertices_estado_b,
-        fragata, 0.12, fragata_mask, (600,y_inicial_pol_b),
-        (600,370), caza, caza_mask, 6,
-        120, rot_b, velocidad_x_b, velocidad_y_b,
-        jugador_x, jugador_y, jugador_mask,proyectiles_jugador,puntaje_jugador, ventana, vuelta,contador_enemigos)
+            velocidad_x_b, velocidad_y_b, direccion_actual_b = cuadrada(pos_central_b,direccion_actual_b,70,600,100,370)
+            y_inicial_pol_b += 2
+            rot_b += 0.05
+            pos_central_b, fase_b_pol, nave_central_dict_b, vertices_estado_b, nuevos_disparos_central_b,puntaje_jugador,contador_enemigos,vertices_vivos_b,estado_central_b = esc_2(
+            fase_b_pol, nave_central_dict_b,disparos_central_b, vertices_estado_b,
+            fragata, 0.12, fragata_mask, (600,y_inicial_pol_b),
+            (600,370), caza, caza_mask, 6,
+            120, rot_b, velocidad_x_b, velocidad_y_b,
+            jugador_x, jugador_y, jugador_mask,proyectiles_jugador,puntaje_jugador, ventana, vuelta,contador_enemigos)
          
-        disparos_central_b = actualizar_y_dibujar_disparos(nuevos_disparos_central_b, ventana)
-    #
-        #ESCENARIO 3
-        if estado_central_a == "destruido" and estado_central_b == "destruido" and  (vertices_vivos_a + vertices_vivos_b) == 0:
-            fase_a_pol = "entrada"
-            fase_b_pol = "entrada"
-            y_inicial_pol_a = 0
-            y_inicial_pol_b = 0
-            rot_a = 0
-            rot_b = 0
-            nave_central_dict_a = {}  
-            nave_central_dict_b = {}
-            vertices_estado_a = []
-            vertices_estado_b = []
-            #PENDIENTE CREAR FUNCION RESET_POLIGONICA EN ENEMIGOS
+            disparos_central_b = actualizar_y_dibujar_disparos(nuevos_disparos_central_b, ventana)
+            if estado_central_a == "destruido" and estado_central_b == "destruido" and  (vertices_vivos_a + vertices_vivos_b) == 0:
+                fase_a_pol = "entrada"
+                fase_b_pol = "entrada"
+                y_inicial_pol_a = 0
+                y_inicial_pol_b = 0
+                rot_a = 0
+                rot_b = 0
+                nave_central_dict_a = {}  
+                nave_central_dict_b = {}
+                vertices_estado_a = []
+                vertices_estado_b = []
+                #PENDIENTE CREAR FUNCION RESET_POLIGONICA EN ENEMIGOS
+                escenario = 3
+            
+        case 3:
+            #ESCENARIO 3
+        
             #CARRIER A
             y_inicial_carrier += 2
             tick_actual = pygame.time.get_ticks()

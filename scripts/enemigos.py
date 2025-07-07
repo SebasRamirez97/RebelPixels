@@ -295,7 +295,7 @@ def trayectoria_cuadrada(posicion, direccion_actual, x_min, x_max, y_min, y_max)
 
     return velocidad_x, velocidad_y, direccion_actual
 
-def entrada_carrier(carrier,mask_carrier,pos_inicial_carrier,pos_final_carrier,ventana):
+def entrada_carrier(carrier,mask_carrier,pos_inicial_carrier,pos_final_carrier,ventana,vuelta):
     
     fase = "entrada"
     ventana.blit(carrier,pos_inicial_carrier)

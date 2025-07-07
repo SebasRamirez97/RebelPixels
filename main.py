@@ -2,10 +2,12 @@ import pygame
 
 from scripts.enemigos import crear_conjunto_mascaras as e_mask
 from scripts.enemigos import imagenes_enemigos as e_image
+from scripts.disparos import actualizar_y_dibujar_disparos
 from scripts.enemigos import varios_escuadrones as varios_squads
 from scripts.enemigos import trayectoria_cuadrada as cuadrada
 from scripts.escenarios import escenario_1 as esc_1
 from scripts.escenarios import escenario_2 as esc_2
+from scripts.escenarios import escenario_3 as esc_3
 from scripts.jugador import imagen_jugador as p_image
 from scripts.jugador import procesar_movimiento
 from scripts.jugador import mascara_jugador as p_mask
@@ -43,6 +45,7 @@ contador_enemigos = 0
 vidas = 3
 ultimo_golpe = 0
 cooldown_ms = 1000
+
 font = pygame.font.Font(None, 26)
 
 #posicion del jugador
@@ -53,14 +56,17 @@ jugador_sprite = p_image()
 
 proyectiles = []
 proyectiles_jugador = []
+vuelta = 1
+puntaje_jugador = 0
+contador_enemigos = 0
 
 #ESCENARIO 1
 y_inicial_squad_a = -100
 y_inicial_squad_b = 0
 fase_a = "entrada"
 fase_b ="entrada"
-escuadrones_posiciones_a = varios_squads(3, caza, caza_mask, (150, y_inicial_squad_a), 50, 200)
-escuadrones_posiciones_b = varios_squads(3, caza, caza_mask, (150, y_inicial_squad_b), 50, 200)
+escuadrones_posiciones_a = varios_squads(3, caza, caza_mask, (150, y_inicial_squad_a), 50, 200,vuelta)
+escuadrones_posiciones_b = varios_squads(3, caza, caza_mask, (150, y_inicial_squad_b), 50, 200,vuelta)
 disparos_enemigos_a = []
 disparos_enemigos_b =[]
 
@@ -74,6 +80,7 @@ direccion_actual_a = "Derecha"
 rot_a = 0
 velocidad_x_a = 0
 velocidad_y_a = 0
+disparos_central_a = []
 
 fase_b_pol = "entrada"
 nave_central_dict_b = None
@@ -84,6 +91,14 @@ direccion_actual_b = "Derecha"
 rot_b = 0
 velocidad_x_b = 0
 velocidad_y_b = 0
+disparos_central_b = []
+
+# ESCENARIO 3
+fase_carrier = "entrada"
+y_inicial_carrier = -20
+dict_carrier = None
+cooldown_carrier = 1000
+disparos_enemigos = []
 
 pausa = False
 corriendo = True
@@ -123,7 +138,7 @@ while corriendo:
     # Dibuja el fondo sobre la ventana        
     ventana.blit(fondo, (0, 0))  
 
-    mostrar_puntuacion(ventana, font, score)
+    mostrar_puntuacion(ventana, font, puntaje_jugador)
     enemigos_destruidos(ventana, font, contador_enemigos)
     mostrar_vidas(ventana, font, vidas)
     
@@ -133,31 +148,31 @@ while corriendo:
     #Acrualizar y Dibujar proyectiles
     actualizar_proyectiles(ventana, proyectiles_jugador)
     
-    # Colisiones con enemigos escenario 1
-    destruidos = detectar_colisiones(proyectiles_jugador, escuadrones_posiciones_a, escuadrones_posiciones_b)
-    contador_enemigos += destruidos
-    score += destruidos * 100
-    if destruidos > 0 and sonido_activado:
-        sonido.reproducir_explosion()
-    
-    # Colisiones con enemigos y naves escenario 2
-    if fase_a_pol == "batalla":
-        destruidos_a = detectar_colisiones_vertices(proyectiles_jugador, vertices_estado_a, nave_central_dict_a, 120, rot_a)
-        contador_enemigos += destruidos_a
-        score += destruidos_a * 100
-        if destruidos_a > 0 and sonido_activado:
-            sonido.reproducir_explosion()    
+    ##Colisiones con enemigos escenario 1
+    vidas,ultimo_golpe = detectar_colisiones(jugador_x,jugador_y,jugador_mask,vidas, escuadrones_posiciones_a, escuadrones_posiciones_b,ultimo_golpe,cooldown_ms)
+    #contador_enemigos += destruidos
+    #score += destruidos * 100
+    #if destruidos > 0 and sonido_activado:
+    #    sonido.reproducir_explosion()
+#
+    ##Colisiones con enemigos y naves escenario 2
+    #if fase_a_pol == "batalla":
+    #    destruidos_a = detectar_colisiones_vertices(proyectiles_jugador, vertices_estado_a, nave_central_dict_a, 120, rot_a)
+    #    contador_enemigos += destruidos_a
+    #    score += destruidos_a * 100
+    #    if destruidos_a > 0 and sonido_activado:
+    #        sonido.reproducir_explosion()    
 
-    if fase_b_pol == "batalla":
-        destruidos_b = destruidos_b = detectar_colisiones_vertices(proyectiles_jugador, vertices_estado_b, nave_central_dict_b, 120, rot_b)
-        contador_enemigos += destruidos_b
-        score += destruidos_b * 100
-        if destruidos_b > 0 and sonido_activado:
-            sonido.reproducir_explosion()
+    ##if fase_b_pol == "batalla":
+     #   destruidos_b = destruidos_b = detectar_colisiones_vertices(proyectiles_jugador, vertices_estado_b, nave_central_dict_b, 120, rot_b)
+     #   contador_enemigos += destruidos_b
+     #   score += destruidos_b * 100
+     #   if destruidos_b > 0 and sonido_activado:
+     #       sonido.reproducir_explosion()
     
     # Movimiento de disparo
     if pygame.key.get_pressed()[pygame.K_SPACE]:
-        disparar(jugador_x, jugador_y, proyectiles_jugador)
+        disparar(jugador_x, jugador_y, proyectiles_jugador) 
     
     if pygame.time.get_ticks() - ultimo_golpe < 1000:
         herido = jugador_sprite.copy()
@@ -165,75 +180,69 @@ while corriendo:
         ventana.blit(herido, (jugador_x, jugador_y))
     else:
         ventana.blit(jugador_sprite, (jugador_x, jugador_y))
-    
     #ESCENARIO 1
     
     aux_x += VELOCIDAD_X
-    if aux_x  > 200 or aux_x < 2:
-        VELOCIDAD_X = -VELOCIDAD_X 
+    if aux_x  > 150 or aux_x < 2:
+        VELOCIDAD_X = -VELOCIDAD_X
+
+    #Escuadron A
     y_inicial_squad_a += 1
+    escuadrones_posiciones_a , fase_a , nuevos_disparos_a, puntaje_jugador, contador_enemigos = esc_1(3, caza, caza_mask, (150, y_inicial_squad_a),(150,100), 50, 200,ventana,
+    VELOCIDAD_X,jugador_x,jugador_y,jugador_mask,proyectiles_jugador,puntaje_jugador,escuadrones_posiciones_a,fase_a,disparos_enemigos_a,vuelta,contador_enemigos)
+    
+    disparos_enemigos_a = actualizar_y_dibujar_disparos(nuevos_disparos_a, ventana)
+
+    #Escuadron B
     y_inicial_squad_b += 1
-    escuadrones_posiciones_a , fase_a , nuevos_disparos_a = esc_1(3, caza, caza_mask, (150, y_inicial_squad_a),(150,100), 50, 200,ventana,
-    VELOCIDAD_X,jugador_x,jugador_y,jugador_mask,escuadrones_posiciones_a,fase_a,disparos_enemigos_a)
-    
-    disparos_actualizados_a = []
+    escuadrones_posiciones_b , fase_b , nuevos_disparos_b,puntaje_jugador,contador_enemigos = esc_1(3, caza, caza_mask, (150, y_inicial_squad_b),(150,200), 50, 200,ventana,
+                                                                                                    VELOCIDAD_X,jugador_x,jugador_y,jugador_mask,proyectiles_jugador,puntaje_jugador,escuadrones_posiciones_b,fase_b,disparos_enemigos_b,vuelta,contador_enemigos)
 
-    for disparo_a in nuevos_disparos_a:
-        nueva_y_a = disparo_a["posicion"][1] + disparo_a["velocidad"]
-        nueva_pos_a = (disparo_a["posicion"][0], nueva_y_a)
-
-    # Dibujarlo
-        pygame.draw.rect(ventana, (255, 0, 0), (*nueva_pos_a, 4, 10))  # Simple proyectil rojo
-
-        # Mantener si sigue en pantalla
-        if nueva_y_a < ventana.get_height():
-            disparos_actualizados_a.append({**disparo_a, "posicion": nueva_pos_a})
-
-    disparos_enemigos_a = disparos_actualizados_a
-    
-    escuadrones_posiciones_b , fase_b , nuevos_disparos_b = esc_1(3, caza, caza_mask, (150, y_inicial_squad_b),(150,200), 50, 200,ventana,
-        VELOCIDAD_X,jugador_x,jugador_y,jugador_mask,escuadrones_posiciones_b,fase_b,disparos_enemigos_b)
-    disparos_actualizados_b = []
-
-    for disparo_b in nuevos_disparos_b:
-        nueva_y_b = disparo_b["posicion"][1] + disparo_b["velocidad"]
-        nueva_pos = (disparo_b["posicion"][0], nueva_y_b)
-
-    # Dibujarlo
-        pygame.draw.rect(ventana, (255, 0, 0), (*nueva_pos, 4, 10))  # Simple proyectil rojo
-
-        # Mantener si sigue en pantalla
-        if nueva_y_b < ventana.get_height():
-            disparos_actualizados_b.append({**disparo_b, "posicion": nueva_pos})
-    disparos_enemigos_b = disparos_actualizados_b
+    disparos_enemigos_b = actualizar_y_dibujar_disparos(nuevos_disparos_b, ventana)
     
     if(not any(escuadrones_posiciones_a)and not any(escuadrones_posiciones_b)):
-        #ESCENARIO 2
+       #ESCENARIO 2
             
         velocidad_x_a, velocidad_y_a, direccion_actual_a = cuadrada(pos_central_a,direccion_actual_a,70,600,100,370)
         y_inicial_pol_a += 2
         rot_a += 0.05
-        pos_central_a, fase_a_pol, nave_central_dict_a, vertices_estado_a, disparos = esc_2(
-        fase_a_pol, nave_central_dict_a, vertices_estado_a,
+    
+        pos_central_a, fase_a_pol, nave_central_dict_a, vertices_estado_a, nuevos_disparos_central_a,puntaje_jugador,contador_enemigos = esc_2(
+        fase_a_pol, nave_central_dict_a,disparos_central_a, vertices_estado_a,
         fragata, 0.12, fragata_mask, (70,y_inicial_pol_a),
         (70,100), caza, caza_mask, 6,
         120, rot_a, velocidad_x_a, velocidad_y_a,
-        jugador_x, jugador_y, jugador_mask, ventana)  
-            
-        
+        jugador_x, jugador_y, jugador_mask,proyectiles_jugador,puntaje_jugador, ventana,vuelta,contador_enemigos)  
+    
+        disparos_central_a = actualizar_y_dibujar_disparos(nuevos_disparos_central_a, ventana)   
+    
         velocidad_x_b, velocidad_y_b, direccion_actual_b = cuadrada(pos_central_b,direccion_actual_b,70,600,100,370)
         y_inicial_pol_b += 2
         rot_b += 0.05
-        pos_central_b, fase_b_pol, nave_central_dict_b, vertices_estado_b, disparos = esc_2(
-        fase_b_pol, nave_central_dict_b, vertices_estado_b,
+        pos_central_b, fase_b_pol, nave_central_dict_b, vertices_estado_b, nuevos_disparos_central_b,puntaje_jugador,contador_enemigos = esc_2(
+        fase_b_pol, nave_central_dict_b,disparos_central_b, vertices_estado_b,
         fragata, 0.12, fragata_mask, (600,y_inicial_pol_b),
         (600,370), caza, caza_mask, 6,
         120, rot_b, velocidad_x_b, velocidad_y_b,
-        jugador_x, jugador_y, jugador_mask, ventana)
-        
+        jugador_x, jugador_y, jugador_mask,proyectiles_jugador,puntaje_jugador, ventana, vuelta,contador_enemigos)
+         
+        disparos_central_b = actualizar_y_dibujar_disparos(nuevos_disparos_central_b, ventana)
+    #
+        #ESCENARIO 3
+        if nave_central_dict_a["estado"] == "destruido" and nave_central_dict_b["estado"] == "destruido" and not any(vertices_estado_a) and not any(vertices_estado_b):
+            #CARRIER A
+            y_inicial_carrier += 2
+            tick_actual = pygame.time.get_ticks()
+            fase_carrier, dict_carrier, nuevos_disparos= esc_3(fase_carrier,dict_carrier,carrier,carrier_mask,(100, y_inicial_carrier),(100, 100),jugador_x,jugador_y,jugador_mask,ventana,tick_actual,bombardero,bombardero_mask,5,cooldown_carrier,disparos_enemigos)
+            disparos_enemigos = actualizar_y_dibujar_disparos(nuevos_disparos, ventana)
+
+    
     vidas, corriendo, ultimo_golpe = detectar_colision_con_jugador(disparos_enemigos_a + disparos_enemigos_b,
     jugador_x, jugador_y, jugador_sprite, vidas, ultimo_golpe, 1000, sonido.reproducir_danio if sonido_activado else None)
 
+    vidas, corriendo, ultimo_golpe = detectar_colision_con_jugador(disparos_central_a + disparos_central_b,
+    jugador_x, jugador_y, jugador_sprite, vidas, ultimo_golpe, 1000, sonido.reproducir_danio if sonido_activado else None)
+    
     if vidas <= 0:
         mostrar_pantalla_gameover(ventana, font, score)
 

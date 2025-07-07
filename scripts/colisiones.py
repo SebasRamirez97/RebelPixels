@@ -1,30 +1,17 @@
 import math
 import pygame
 
-def detectar_colisiones(proyectiles, escuadrones_a, escuadrones_b, ancho=60, alto=60):
-    enemigos_destruidos = 0
-    enemigos = [nave for escuadron in escuadrones_a + escuadrones_b for nave in escuadron]
+def detectar_colisiones(jugador_x,jugador_y,mascara_jugador,vidas, escuadrones_a, escuadrones_b,ultimo_golpe,cooldown_ms):
+    tiempo_actual = pygame.time.get_ticks()
+    if tiempo_actual - ultimo_golpe < cooldown_ms:
+        return vidas, ultimo_golpe
+    for escuadron in escuadrones_a + escuadrones_b:
+        for nave in escuadron:
+            offset = (int(nave["posicion"][0] - jugador_x), int(nave["posicion"][1] - jugador_y))
 
-    for proyectil in proyectiles[:]:
-        rect_proj = proyectil["rect"]
-
-        for enemigo in enemigos[:]:
-            x, y = enemigo["posicion"]
-            rect_enemigo = pygame.Rect(x, y, ancho, alto)
-
-            if rect_proj.colliderect(rect_enemigo):
-                proyectiles.remove(proyectil)
-                enemigos_destruidos += 1
-
-                for escuadron in escuadrones_a:
-                    if enemigo in escuadron:
-                        escuadron.remove(enemigo)
-                for escuadron in escuadrones_b:
-                    if enemigo in escuadron:
-                        escuadron.remove(enemigo)
-
-                break  
-    return enemigos_destruidos
+            if mascara_jugador.overlap(nave["mask_nave"], offset):
+                vidas -= 1
+    return vidas, ultimo_golpe
 
 
 def detectar_colisiones_vertices(proyectiles, vertices, nave_central_dict, distancia, rotacion, escala=0.12):

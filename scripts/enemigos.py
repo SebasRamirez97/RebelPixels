@@ -250,6 +250,7 @@ def batalla_poligomica(nave_central_dict,disparos_central, vertices_estado, esca
             nave_central_dict["estado"] = "destruido"
             puntaje_jugador += nave_central_dict["puntaje"]
             contador_enemigos += 1
+            sonido.reproducir_explosion()
         else:
             ventana.blit(nave_central_dict["sprite_nave"], nave_central_dict["posicion"])
 
@@ -370,6 +371,7 @@ def batalla_carrier(diccionario_carrier, tick_actual, nave_tropa, nave_tropa_mas
         diccionario_carrier["estado"] = "destruido"
         puntaje_jugador += diccionadio_carrier["puntaje"]
         contador_enemigos += 1
+        sonido.reproducir_explosion()
     else:
         ventana.blit(sprite_carrier, (x_carrier, y_carrier))
 
@@ -379,10 +381,10 @@ def batalla_carrier(diccionario_carrier, tick_actual, nave_tropa, nave_tropa_mas
 
     for nave in diccionario_carrier["lista_naves"]:
         if nave["estado"] in ("activo", "detenida"):
-            naves_activas.append(naves)
-            destinos_ocupados.append(caza["destino"])
+            naves_activas.append(nave)
+            destinos_ocupados.append(nave["destino"])
 
-    diccionario_carrier["lista_naves"] = cazas_activas
+    diccionario_carrier["lista_naves"] = naves_activas
 
     # Detectar destinos libres
     destinos_disponibles = []
@@ -440,7 +442,7 @@ def batalla_carrier(diccionario_carrier, tick_actual, nave_tropa, nave_tropa_mas
             nave["estado"] = "destruida"
             puntaje_jugador += nave["puntaje"]
             contador_enemigos += 1
-            
+            sonido.reproducir_explosion()
             # Acá podrías agregar explosión o sonido
     
             

@@ -58,11 +58,11 @@ def escenario_2(fase, nave_central_dict,disparos_central, vertices_estado,
     return nave_central_dict["posicion"], fase, nave_central_dict, vertices_estado, nuevos_disparos_central ,puntaje_jugador,contador_enemigos,vertices_vivos,estado_nave_central
 
 def escenario_3(fase, dict_carrier, carrier, carrier_mask, pos_inicial, pos_final,
-                jugador_x, jugador_y, jugador_mask, ventana, tick_actual,
-                nave_tropa, nave_tropa_mask,cantidad, cooldown,nuevos_disparos):
+                jugador_x, jugador_y, jugador_mask,disparos_jugador,puntaje_jugador,ventana, tick_actual,
+                nave_tropa, nave_tropa_mask,cantidad, cooldown,disparos_enemigos,vuelta):
 
     if fase == "entrada":
-        situacion = entrada_carrier(carrier, carrier_mask, pos_inicial, pos_final, ventana)
+        situacion = entrada_carrier(carrier, carrier_mask, pos_inicial, pos_final, ventana,vuelta)
         nueva_fase = situacion["fase"]
         dict_carrier = situacion["carrier"]
 
@@ -79,7 +79,7 @@ def escenario_3(fase, dict_carrier, carrier, carrier_mask, pos_inicial, pos_fina
         fase = nueva_fase
 
     elif fase == "batalla":
-        dict_carrier, nuevos_disparos = batalla_carrier(dict_carrier, ventana, tick_actual,
-                                       nave_tropa, nave_tropa_mask, cooldown,nuevos_disparos,jugador_x,jugador_y,jugador_mask)
+        dict_carrier, nuevos_disparos,pungaje_jugador,contador_enemigos = batalla_carrier(dict_carrier, ventana, tick_actual,
+                                       nave_tropa, nave_tropa_mask, cooldown,nuevos_disparos,jugador_x,jugador_y,jugador_mask,disparos_jugador,puntaje_jugadpr,ventana,vuelta,contador_enemigos)
 
-    return fase, dict_carrier, nuevos_disparos
+    return fase, dict_carrier, nuevos_disparos, puntaje_jugador, contador_enemigos

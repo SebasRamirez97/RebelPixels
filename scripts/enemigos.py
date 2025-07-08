@@ -93,8 +93,11 @@ def batalla_varios_escuadrones(lista_escuadrones,velocidad_x,jugador_x,jugador_y
                 disparos_enemigos.extend([disparo1, disparo2])
             for disparo in disparos_jugador[:]:
                 if disparo["rect"].colliderect(pygame.Rect(nave["posicion"][0], nave["posicion"][1], 60, 60)):
-                    nave["vida"] -= 5
+                    nave["vida"] -= 50
                     disparos_jugador.remove(disparo)
+                    herido = nave["nave_prite"].copy()
+                    herido.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_ADD)
+                    ventana.blit(herido, (nave["posicion"][0], nave["posicion"][0]))
                     break
                     
                 
@@ -194,8 +197,11 @@ def batalla_poligomica(nave_central_dict,disparos_central, vertices_estado, esca
 
             for disparo in disparos_jugador[:]:
                 if disparo["rect"].colliderect(pygame.Rect(vertice["posicion"][0], vertice["posicion"][1], 60, 60)):
-                    vertice["vida"] -= 5
+                    vertice["vida"] -= 30
                     disparos_jugador.remove(disparo)
+                    herido = vertice["nave_prite"].copy()
+                    herido.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_ADD)
+                    ventana.blit(herido, (vertice["posicion"][0], vertice["posicion"][0]))
                     break
             
             if jugador_mask.overlap(mask_nave_vertice, offset):
@@ -238,9 +244,13 @@ def batalla_poligomica(nave_central_dict,disparos_central, vertices_estado, esca
 
         for disparo in disparos_jugador[:]:
             if disparo["rect"].colliderect(pygame.Rect(nave_central_dict["posicion"][0], nave_central_dict["posicion"][1], 125, 125)):
-                nave_central_dict["vida"] -= 5
+                nave_central_dict["vida"] -= 30
                 disparos_jugador.remove(disparo)
+                herido = nave_central_dict["nave_prite"].copy()
+                herido.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_ADD)
+                ventana.blit(herido, (nave_central_dict["posicion"][0], nave_central_dict["posicion"][0]))
                 break
+
         offset_central = ( nave_central_dict["posicion"][0]- jugador_x), (nave_central_dict["posicion"][1] - jugador_y)    
         
         if jugador_mask.overlap(nave_central_dict["mask_nave"], offset_central):
@@ -358,8 +368,11 @@ def batalla_carrier(diccionario_carrier, tick_actual, nave_tropa, nave_tropa_mas
 
     for disparo in disparos_jugador[:]:
             if disparo["rect"].colliderect(pygame.Rect(x_carrier, y_carrier, 160, 160)):
-                diccionario_carrier["vida"] -= 5
+                diccionario_carrier["vida"] -= 20
                 disparos_jugador.remove(disparo)
+                herido = diccionario_carrier["nave_prite"].copy()
+                herido.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_ADD)
+                ventana.blit(herido, (diccionario_carrier["posicion"][0], diccionario_carrier["posicion"][0]))
                 break
      
     offset_carrier = (int(x_carrier - jugador_x), int(y_carrier - jugador_y))
@@ -429,8 +442,11 @@ def batalla_carrier(diccionario_carrier, tick_actual, nave_tropa, nave_tropa_mas
 
         for disparo in disparos_jugador[:]:
             if disparo["rect"].colliderect(pygame.Rect(nave["posicion"][0], nave["posicion"][1], 60, 60)):
-                nave["vida"] -= 5
+                nave["vida"] -= 30
                 disparos_jugador.remove(disparo)
+                herido = nave["nave_prite"].copy()
+                herido.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_ADD)
+                ventana.blit(herido, nave(["posicion"][0], nave["posicion"][0]))
                 break
                 
         offset_nave = (int(nave["posicion"][0] - jugador_x), int(nave["posicion"][1] - jugador_y))

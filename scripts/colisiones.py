@@ -14,33 +14,36 @@ def detectar_colisiones(jugador_x,jugador_y,mascara_jugador,vidas, escuadrones_a
     return vidas, ultimo_golpe
 
 
-def detectar_colisiones_vertices(proyectiles, vertices, nave_central_dict, distancia, rotacion, escala=0.12):
-    enemigos_destruidos = 0
-    proyectiles_a_remover = []
-    ancho, alto = int(1024 * escala), int(1024 * escala)
+def detectar_colisiones_vertices(jugador_x,jugador_y,mascara_jugador, vertices, nave_central_dict, distancia, rotacion, vidas,ultimo_golpe,cooldown_ms, escala=0.12):
+    tiempo_actual = pygame.time.get_ticks()
+        
+    if tiempo_actual - ultimo_golpe < cooldown_ms:
+            return vidas, ultimo_golpe
+    
+    for vertice in vertices:
+        if vertice["estado"]=="activo":
+            i = vertice["indice"]
+            angulo = 2 * math.pi * i / len(vertices) + rotacion
+            x = nave_central_dict["posicion"][0] + distancia * math.cos(angulo) + (1024 * escala) / 4
+            y = nave_central_dict["posicion"][1] + distancia * math.sin(angulo) + (1024 * escala) / 4
+            vertice["posicion"] = (x,y)
+            pos = (x, y)
+            offset_vertice = (int(pos[0] - jugador_x), int(pos[1] - jugador_y))
 
-    for proyectil in proyectiles[:]:
-        rect_proj = proyectil["rect"]
+            
+            if mascara_jugador.overlap(vertice["mask_nave"], offset_vertice):
+                vidas-=1
+                ultimo_golpe = tiempo_actual
+                break
+    offset_nave_central =  (int(nave_central_dict["posicion"][0] - jugador_x), int(nave_central_dict["posicion"][1]- jugador_y))
+    
+    if mascara_jugador.overlap(nave_central_dict["mask_nave"], offset_nave_central):
+            vidas-=1
+            ultimo_golpe = tiempo_actual
+            
+    
+    return vidas, ultimo_golpe
 
-        for vertice in vertices:
-            if vertice["viva"]:
-                i = vertice["indice"]
-                angulo = 2 * math.pi * i / len(vertices) + rotacion
-                x = nave_central_dict["posicion"][0] + distancia * math.cos(angulo) + ancho / 4
-                y = nave_central_dict["posicion"][1] + distancia * math.sin(angulo) + alto / 4
-                rect_enemigo = pygame.Rect(x, y, 48, 48)  
-
-                if rect_proj.colliderect(rect_enemigo):
-                    vertice["viva"] = False
-                    enemigos_destruidos += 1
-                    proyectiles_a_remover.append(proyectil)
-                    break  
-
-    for p in proyectiles_a_remover:
-        if p in proyectiles:
-            proyectiles.remove(p)
-
-    return enemigos_destruidos
 
 
 def detectar_colision_con_jugador(disparos, jugador_x, jugador_y, jugador_sprite, vidas, ultimo_golpe,

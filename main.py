@@ -56,7 +56,7 @@ def iniciar_juego():
     VELOCIDAD_JUGADOR = 5
     jugador_sprite = p_image()
 
-   
+
     proyectiles_jugador = []
     vuelta = 1
     puntaje_jugador = 0
@@ -293,7 +293,7 @@ def iniciar_juego():
 
         
         if vidas <= 0:
-            mostrar_pantalla_gameover(ventana, font, puntaje_jugador)
+            procesar_gameover(ventana, font, puntaje_jugador)
 
             # Reiniciar variables recién después de ENTER
             vidas = 3

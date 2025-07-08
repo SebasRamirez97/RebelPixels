@@ -6,7 +6,7 @@ from ranking import mostrar_ranking
 pygame.init()
 
 pygame.mixer.init()
-pygame.mixer.music.load("assets/music/menu.mp3")  
+pygame.mixer.music.load("assets/music/menu.mp3") 
 pygame.mixer.music.set_volume(0.5)  # Ajustá volumen
 pygame.mixer.music.play(-1)  # Reproduce en loop infinito
 
@@ -54,6 +54,7 @@ def mostrar_ranking_en_menu(ventana, fuente):
     datos = mostrar_ranking("ranking.json")
 
     ventana.fill((0, 0, 0))
+    fuente = pygame.font.SysFont(None, 30)
     titulo = fuente.render("🏆 RANKING", True, (255, 215, 0))
     ventana.blit(titulo, (280, 50))
 
@@ -119,11 +120,10 @@ def ejecutar_menu():
                                 mostrar_ranking_en_menu(ventana, fuente)
                             elif boton["texto"] == "Créditos":
                                 mostrar_creditos(ventana, fuente)
-                                # Acá podemos llamar a la función de créditos
                             elif boton["texto"] == "Salir":
                                 corriendo = False
 
-     # Se cierra correctamente PyGame liberando los recursos usados.
+    # Se cierra correctamente PyGame liberando los recursos usados.
 if __name__ == "__main__":
     ejecutar_menu()
     pygame.quit()

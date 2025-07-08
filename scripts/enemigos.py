@@ -256,7 +256,7 @@ def batalla_poligomica(nave_central_dict,disparos_central, vertices_estado, esca
 
 
 
-    return nave_central_dict, vertices_estado, disparos_central, puntaje_jugador,contador_enemigos,vertices_vivos,nave_central_dict["estado"]
+    return nave_central_dict, vertices_estado, disparos_central, puntaje_jugador,contador_enemigos,vertices_vivos
 
 def trayectoria_cuadrada(posicion, direccion_actual, x_min, x_max, y_min, y_max):
     x, y = posicion

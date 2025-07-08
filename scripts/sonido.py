@@ -3,6 +3,7 @@ import pygame
 sonido_danio = None
 sonido_explosion = None
 sonido_disparo = None
+sonido_disparo_enemigo = None
 
 def cargar_sonidos():
     global sonido_danio, sonido_explosion, sonido_disparo
@@ -22,6 +23,6 @@ def reproducir_explosion():
         sonido_explosion.play()
 
 def iniciar_musica():
-    pygame.mixer.music.load("assets/music/arcade.mp3")
+    pygame.mixer.music.load("assets/music/juego.mp3")
     pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(-1)

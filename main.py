@@ -83,7 +83,7 @@ def iniciar_juego():
     rot_a = 0
     velocidad_x_a = 0
     velocidad_y_a = 0
-    disparos_central_a = []
+    
 
     fase_b_pol = "entrada"
     nave_central_dict_b = None
@@ -94,21 +94,20 @@ def iniciar_juego():
     rot_b = 0
     velocidad_x_b = 0
     velocidad_y_b = 0
-    disparos_central_b = []
+   
 
     # ESCENARIO 3
     fase_carrier_a = "entrada"
     y_inicial_carrier_a = -20
     dict_carrier_a = None
     cooldown_carrier_a = 1000
-    disparos_enemigos_a = []
+    
 
-    # ESCENARIO 3
     fase_carrier_b = "entrada"
     y_inicial_carrier_b = -20
     dict_carrier_b = None
     cooldown_carrier_b = 1000
-    disparos_enemigos_b = []
+    
 
     pausa = False
     corriendo = True
@@ -236,8 +235,8 @@ def iniciar_juego():
                 y_inicial_pol_a += 2
                 rot_a += 0.05
         
-                pos_central_a, fase_a_pol, nave_central_dict_a, vertices_estado_a, nuevos_disparos_central_a,puntaje_jugador,contador_enemigos,vertices_vivos_a = esc_2(
-                fase_a_pol, nave_central_dict_a,disparos_central_a, vertices_estado_a,
+                pos_central_a, fase_a_pol, nave_central_dict_a, vertices_estado_a, nuevos_central_a,puntaje_jugador,contador_enemigos,vertices_vivos_a = esc_2(
+                fase_a_pol, nave_central_dict_a,disparos_enemigos_a, vertices_estado_a,
                 fragata, 0.12, fragata_mask, (70,y_inicial_pol_a),
                 (70,100), caza, caza_mask, 6,
                 120, rot_a, velocidad_x_a, velocidad_y_a,
@@ -248,15 +247,15 @@ def iniciar_juego():
                 velocidad_x_b, velocidad_y_b, direccion_actual_b = cuadrada(pos_central_b,direccion_actual_b,70,600,100,370)
                 y_inicial_pol_b += 2
                 rot_b += 0.05
-                pos_central_b, fase_b_pol, nave_central_dict_b, vertices_estado_b, nuevos_disparos_central_b,puntaje_jugador,contador_enemigos,vertices_vivos_b,estado_central_b = esc_2(
-                fase_b_pol, nave_central_dict_b,disparos_central_b, vertices_estado_b,
+                pos_central_b, fase_b_pol, nave_central_dict_b, vertices_estado_b, nuevos_disparos_b,puntaje_jugador,contador_enemigos,vertices_vivos_b,estado_central_b = esc_2(
+                fase_b_pol, nave_central_dict_b,disparos_enemigos_b, vertices_estado_b,
                 fragata, 0.12, fragata_mask, (600,y_inicial_pol_b),
                 (600,370), caza, caza_mask, 6,
                 120, rot_b, velocidad_x_b, velocidad_y_b,
                 jugador_x, jugador_y, jugador_mask,proyectiles_jugador,puntaje_jugador, ventana, vuelta,contador_enemigos)
         
                 disparos_central_b = actualizar_y_dibujar_disparos(nuevos_disparos_central_b, ventana)
-                if estado_central_a == "destruido" and estado_central_b == "destruido" and  (vertices_vivos_a + vertices_vivos_b) == 0:
+                if nave_central_dict_a["estado"] == "destruido" and nave_central_dict_b["estado"] == "destruido" and  (vertices_vivos_a + vertices_vivos_b) == 0:
                     fase_a_pol = "entrada"
                     fase_b_pol = "entrada"
                     y_inicial_pol_a = -480
@@ -269,6 +268,8 @@ def iniciar_juego():
                     vertices_estado_b = []
                     direccion_actual_a = "Derecha"
                     direccion_actual_b = "Derecha"
+                    disparos_enemigos_a = []
+                    disparos_enemigos_b =[]
                     escenario = 3
                 
             case 3:
@@ -288,6 +289,19 @@ def iniciar_juego():
                 carrier_mask,(546.6, y_inicial_carrier_b),(546.6, 100),jugador_x,jugador_y,jugador_mask,proyectiles_jugador,puntaje_jugador,ventana,tick_actual,bombardero,bombardero_mask,5,cooldown_carrier_b,disparos_enemigos_b,vuelta,contador_enemigos)
                 disparos_enemigos_b = actualizar_y_dibujar_disparos(nuevos_disparos_b, ventana)
                 
+                if dict_carrier_a["estado"] == "destruido" and dict_carrier_b["estado"] == "destruido":
+                    
+                    fase_carrier_a = "entrada"
+                    fase_carrier_b = "entrada"
+                    y_inicial_carrier_a = -20
+                    y_inicial_carrier_b = -20
+                    dict_carrier_a = None
+                    dict_carrier_b = None
+                    disparos_enemigos_a =[]
+                    disparos_enemigos_b =[]
+                    escenario = 1
+                    vuelta += 1
+                    
                 
         vidas, corriendo, ultimo_golpe = detectar_colision_con_jugador(disparos_enemigos_a + disparos_enemigos_b,
         jugador_x, jugador_y, jugador_sprite, vidas, ultimo_golpe, 1000, sonido.reproducir_danio if sonido_activado else None)

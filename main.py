@@ -236,7 +236,7 @@ def iniciar_juego():
                 y_inicial_pol_a += 2
                 rot_a += 0.05
         
-                pos_central_a, fase_a_pol, nave_central_dict_a, vertices_estado_a, nuevos_disparos_central_a,puntaje_jugador,contador_enemigos,vertices_vivos_a,estado_central_a = esc_2(
+                pos_central_a, fase_a_pol, nave_central_dict_a, vertices_estado_a, nuevos_disparos_central_a,puntaje_jugador,contador_enemigos,vertices_vivos_a = esc_2(
                 fase_a_pol, nave_central_dict_a,disparos_central_a, vertices_estado_a,
                 fragata, 0.12, fragata_mask, (70,y_inicial_pol_a),
                 (70,100), caza, caza_mask, 6,

@@ -1,5 +1,5 @@
-import pygame #importe pygame
 import json #impore json 
+import os
 
 #cargar el ranking desde json
 def cargar_ranking(nombre_archivo):
@@ -17,14 +17,12 @@ def guardar_ranking(nombre_archivo, ranking):
 #agregar un puntaje si corresponde
 def actualizar_ranking(nombre_archivo, nombre_jugador, nuevo_puntaje):
     ranking = cargar_ranking(nombre_archivo)
-
+    ranking = [j for j in ranking if j["nombre"] != nombre_jugador]
     #agrega nuevo puntaje
     ranking.append({"nombre": nombre_jugador, "puntaje": nuevo_puntaje})
-
     #ordenar de menor a mayor 
     ranking = sorted(ranking, key=lambda x: x["puntaje"], reverse=True) #sorte ordena listas, key indica por que ordenar y reverse=true ordena de menor a mayor
     
-
     #solo guarda los 5 mejores
     ranking = ranking[:5] #se queda con los mejores 5 puntajes
     guardar_ranking(nombre_archivo, ranking)
@@ -32,9 +30,7 @@ def actualizar_ranking(nombre_archivo, nombre_jugador, nuevo_puntaje):
 #mostrar los rankings
 def mostrar_ranking(nombre_archivo):
     ranking = cargar_ranking(nombre_archivo)
-    print("ranking top 5")
-    for i, jugador in enumerate(ranking, 1): #muestra el top 5 en su posicion i, nombre y puntaje
-        print(f"{i}, {jugador['nombre']} - {jugador['puntaje']} pts")
+    return [(j["nombre"], j["puntaje"]) for j in ranking]
 
 
 

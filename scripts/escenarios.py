@@ -30,7 +30,7 @@ def escenario_2(fase, nave_central_dict,disparos_central, vertices_estado,
                 nave_central_sprite, escala, mask_nave_central, nave_central_pos_inicial,
                 nave_central_pos_final, nave_vertice_sprite, mask_nave_vertice, cantidad,
                 distancia, rotacion, velocidad_x, velocidad_y,
-                jugador_x, jugador_y, jugador_mask,disparos_jugador,puntaje_jugador, ventana,vuelta,contador_enemigos):
+                jugador_x, jugador_y, jugador_mask,disparos_jugador,puntaje_jugador, ventana,vuelta,contador_enemigos,vertices_vivos):
     
     nuevos_disparos_central= []
 
@@ -48,14 +48,14 @@ def escenario_2(fase, nave_central_dict,disparos_central, vertices_estado,
             vertices_estado = situacion["vertices"]
 
     elif fase == "batalla":
-        nave_central_dict, vertices_estado, nuevos_disparos_central,puntaje_jugador,contador_enemigos,vertices_vivos,estado_nave_central= batalla_poligomica(
+        nave_central_dict, vertices_estado, nuevos_disparos_central,puntaje_jugador,contador_enemigos,vertices_vivos= batalla_poligomica(
             nave_central_dict,disparos_central, vertices_estado, escala,
             nave_vertice_sprite, mask_nave_vertice,
             distancia, rotacion, velocidad_x, velocidad_y,
             jugador_x, jugador_y, jugador_mask,disparos_jugador,puntaje_jugador, ventana,contador_enemigos
         )
 
-    return nave_central_dict["posicion"], fase, nave_central_dict, vertices_estado, nuevos_disparos_central ,puntaje_jugador,contador_enemigos,vertices_vivos,estado_nave_central
+    return nave_central_dict["posicion"], fase, nave_central_dict, vertices_estado, nuevos_disparos_central ,puntaje_jugador,contador_enemigos,vertices_vivos
 
 def escenario_3(fase, dict_carrier, carrier, carrier_mask, pos_inicial, pos_final,
                 jugador_x, jugador_y, jugador_mask,disparos_jugador,puntaje_jugador,ventana, tick_actual,

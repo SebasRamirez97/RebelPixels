@@ -212,6 +212,7 @@ def iniciar_juego():
                     pos_central_b = (600,y_inicial_pol_b)
                     disparos_enemigos_a = []
                     disparos_enemigos_b =[]
+                    aux_x = 0
             case 2:
                 #ESCENARIO 2
                 

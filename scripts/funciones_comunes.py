@@ -1,4 +1,5 @@
 import pygame
+from ranking import cargar_ranking, guardar_ranking, actualizar_ranking, mostrar_ranking
 
 def cargar_imagen(direccion, escala):
     imagen = pygame.image.load(direccion)
@@ -95,3 +96,64 @@ def generar_diccionario(nave, mascara_nave, posicion_nave):
         "estado": "destruido"
     }
     return diccionario_nave
+
+def pedir_nombre(ventana, font, max_caracteres=12):
+    nombre = ""
+    ingresando = True
+
+    while ingresando:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return None
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN and nombre.strip() != "":
+                    ingresando = False
+                elif event.key == pygame.K_BACKSPACE:
+                    nombre = nombre[:-1]
+                elif len(nombre) < max_caracteres and event.unicode.isprintable():
+                    nombre += event.unicode
+
+        ventana.fill((0, 0, 0))
+        texto = font.render("Ingrese su nombre: " + nombre + "_", True, (255, 255, 255))
+        ventana.blit(texto, (100, 250))
+        pygame.display.flip()
+
+    return nombre.strip()
+
+def procesar_gameover(ventana, font, puntaje_jugador):
+
+    mostrar_pantalla_gameover(ventana, font, puntaje_jugador)
+    pygame.display.flip()
+    pygame.time.delay(1000)
+
+    nombre = pedir_nombre(ventana, font)
+    if not nombre:
+        return False  
+
+    actualizar_ranking("ranking.json", nombre, puntaje_jugador)
+    top5 = mostrar_ranking("ranking.json")
+    
+    esperando = True
+    while esperando:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    return True  # Nueva partida
+                elif event.key == pygame.K_ESCAPE:
+                    return False  # Salir
+
+        
+        ventana.fill((0, 0, 0))
+        titulo = font.render("TOP 5 PUNTAJES", True, (255, 215, 0))
+        ventana.blit(titulo, (250, 50))
+        for i, (nombre_r, score_r) in enumerate(top5):
+            texto = font.render(f"{i+1}. {nombre_r}: {score_r}", True, (255, 255, 255))
+            ventana.blit(texto, (250, 100 + i * 40))
+
+        mensaje = font.render("ENTER: Nueva partida | ESC: Salir", True, (200, 200, 200))
+        ventana.blit(mensaje, (150, 400))
+
+        pygame.display.flip()
+        

@@ -139,6 +139,9 @@ def iniciar_juego():
                 else:
                     pygame.mixer.music.set_volume(0)
                     print("🔇 Sonido silenciado")
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    disparar(jugador_x, jugador_y, proyectiles_jugador)
 
         if pausa:
             mostrar_pantalla_pausa(ventana, font)
@@ -185,8 +188,8 @@ def iniciar_juego():
         #       sonido.reproducir_explosion()
         
         # Movimiento de disparo
-        if pygame.key.get_pressed()[pygame.K_SPACE]:
-            disparar(jugador_x, jugador_y, proyectiles_jugador) 
+        #if pygame.key.get_pressed()[pygame.K_SPACE]:
+         #   disparar(jugador_x, jugador_y, proyectiles_jugador) 
         
         if pygame.time.get_ticks() - ultimo_golpe < 1000:
             herido = jugador_sprite.copy()
@@ -220,7 +223,12 @@ def iniciar_juego():
                     escenario = 2
                     fase_a = "entrada"
                     fase_b = "entrada"
-            
+                    y_inicial_squad_a = -100
+                    pos_central_a = (70,y_inicial_pol_a)
+                    y_inicial_squad_b = 0
+                    pos_central_b = (600,y_inicial_pol_b)
+                    disparos_enemigos_a = []
+                    disparos_enemigos_b =[]
             case 2:
                 #ESCENARIO 2
                 
@@ -251,15 +259,16 @@ def iniciar_juego():
                 if estado_central_a == "destruido" and estado_central_b == "destruido" and  (vertices_vivos_a + vertices_vivos_b) == 0:
                     fase_a_pol = "entrada"
                     fase_b_pol = "entrada"
-                    y_inicial_pol_a = 0
-                    y_inicial_pol_b = 0
+                    y_inicial_pol_a = -480
+                    y_inicial_pol_b = -210
                     rot_a = 0
                     rot_b = 0
-                    nave_central_dict_a = {}  
-                    nave_central_dict_b = {}
+                    nave_central_dict_a = None
+                    nave_central_dict_b = None
                     vertices_estado_a = []
                     vertices_estado_b = []
-                    #PENDIENTE CREAR FUNCION RESET_POLIGONICA EN ENEMIGOS
+                    direccion_actual_a = "Derecha"
+                    direccion_actual_b = "Derecha"
                     escenario = 3
                 
             case 3:

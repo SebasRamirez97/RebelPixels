@@ -42,7 +42,7 @@ def iniciar_juego():
     fondo = pygame.transform.scale(fondo, (800, 600))
 
     #ventana puntaje
-    score = 0
+    puntaje_jugador = 0
     contador_enemigos = 0
     vidas = 3
     ultimo_golpe = 0
@@ -61,7 +61,7 @@ def iniciar_juego():
     vuelta = 1
     puntaje_jugador = 0
     contador_enemigos = 0
-    escenario = 2
+    escenario = 1
 
     #ESCENARIO 1
     y_inicial_squad_a = -100
@@ -72,6 +72,8 @@ def iniciar_juego():
     escuadrones_posiciones_b = varios_squads(3, caza, caza_mask, (150, y_inicial_squad_b), 50, 200,vuelta)
     disparos_enemigos_a = []
     disparos_enemigos_b =[]
+    aux_x = 0
+    VELOCIDAD_X = 2
 
     #ESCENARIO 2
     fase_a_pol = "entrada"
@@ -83,6 +85,7 @@ def iniciar_juego():
     rot_a = 0
     velocidad_x_a = 0
     velocidad_y_a = 0
+    vertices_vivos_a = 0
     
 
     fase_b_pol = "entrada"
@@ -94,6 +97,7 @@ def iniciar_juego():
     rot_b = 0
     velocidad_x_b = 0
     velocidad_y_b = 0
+    vertices_vivos_b = 0
    
 
     # ESCENARIO 3
@@ -111,10 +115,7 @@ def iniciar_juego():
 
     pausa = False
     corriendo = True
-    aux_x = 0
-    aux_y = 0
-    rot = 0
-    VELOCIDAD_X = 2
+    
 
     reloj = pygame.time.Clock()
 
@@ -168,10 +169,10 @@ def iniciar_juego():
         vidas,ultimo_golpe = detectar_colisiones(jugador_x,jugador_y,jugador_mask,vidas, escuadrones_posiciones_a, escuadrones_posiciones_b,ultimo_golpe,cooldown_ms)
 
         ##Colisiones con enemigos escenario 2
-    if fase_a_pol == "batalla":
-        vidas,ultimo_golpe = detectar_colisiones_vertices(jugador_x,jugador_y,jugador_mask, vertices_estado_a, nave_central_dict_a, 120, rot_a,vidas,ultimo_golpe,cooldown_ms)
-    if fase_b_pol == "batalla":
-        vidas,ultimo_golpe = detectar_colisiones_vertices(jugador_x,jugador_y,jugador_mask, vertices_estado_b, nave_central_dict_b, 120, rot_a,vidas,ultimo_golpe,cooldown_ms) 
+        if fase_a_pol == "batalla":
+            vidas,ultimo_golpe = detectar_colisiones_vertices(jugador_x,jugador_y,jugador_mask, vertices_estado_a, nave_central_dict_a, 120, rot_a,vidas,ultimo_golpe,cooldown_ms)
+        if fase_b_pol == "batalla":
+            vidas,ultimo_golpe = detectar_colisiones_vertices(jugador_x,jugador_y,jugador_mask, vertices_estado_b, nave_central_dict_b, 120, rot_a,vidas,ultimo_golpe,cooldown_ms) 
         
         if pygame.time.get_ticks() - ultimo_golpe < 1000:
             herido = jugador_sprite.copy()
@@ -223,19 +224,19 @@ def iniciar_juego():
                 fragata, 0.12, fragata_mask, (70,y_inicial_pol_a),
                 (70,100), caza, caza_mask, 6,
                 120, rot_a, velocidad_x_a, velocidad_y_a,
-                jugador_x, jugador_y, jugador_mask,proyectiles_jugador,puntaje_jugador, ventana,vuelta,contador_enemigos)  
+                jugador_x, jugador_y, jugador_mask,proyectiles_jugador,puntaje_jugador, ventana,vuelta,contador_enemigos,vertices_estado_a)  
         
                 disparos_enemigos_a = actualizar_y_dibujar_disparos(nuevos_disparos_a, ventana)   
         
                 velocidad_x_b, velocidad_y_b, direccion_actual_b = cuadrada(pos_central_b,direccion_actual_b,70,600,100,370)
                 y_inicial_pol_b += 2
                 rot_b += 0.05
-                pos_central_b, fase_b_pol, nave_central_dict_b, vertices_estado_b, nuevos_disparos_b,puntaje_jugador,contador_enemigos,vertices_vivos_b,estado_central_b = esc_2(
+                pos_central_b, fase_b_pol, nave_central_dict_b, vertices_estado_b, nuevos_disparos_b,puntaje_jugador,contador_enemigos,vertices_vivos_b = esc_2(
                 fase_b_pol, nave_central_dict_b,disparos_enemigos_b, vertices_estado_b,
                 fragata, 0.12, fragata_mask, (600,y_inicial_pol_b),
                 (600,370), caza, caza_mask, 6,
                 120, rot_b, velocidad_x_b, velocidad_y_b,
-                jugador_x, jugador_y, jugador_mask,proyectiles_jugador,puntaje_jugador, ventana, vuelta,contador_enemigos)
+                jugador_x, jugador_y, jugador_mask,proyectiles_jugador,puntaje_jugador, ventana, vuelta,contador_enemigos,vertices_vivos_b)
         
                 disparos_enemigos_b = actualizar_y_dibujar_disparos(nuevos_disparos_b, ventana)
 
@@ -291,47 +292,48 @@ def iniciar_juego():
         jugador_x, jugador_y, jugador_sprite, vidas, ultimo_golpe, 1000, sonido.reproducir_danio if sonido_activado else None)
 
         
-    if vidas <= 0:
-        mostrar_pantalla_gameover(ventana, font, puntaje_jugador)
+        if vidas <= 0:
+            mostrar_pantalla_gameover(ventana, font, puntaje_jugador)
 
-        # Reiniciar variables recién después de ENTER
-        vidas = 3
-        puntaje_jugador = 0
-        escenario = 1
-        contador_enemigos = 0
-        jugador_x, jugador_y = 400, 500
-        #RESET ESCENARIO 1
-        fase_a = "entrada"
-        fase_b = "entrada"
-        y_inicial_squad_a = -100
-        y_inicial_squad_b = 0
-        disparos_enemigos_a = []
-        disparos_enemigos_b = []
-        #RESET ESCENARIO 2
-        fase_a_pol = "entrada"
-        fase_b_pol = "entrada"
-        y_inicial_pol_a = -480
-        y_inicial_pol_b = -210
-        rot_a = 0
-        rot_b = 0
-        nave_central_dict_a = {}  
-        nave_central_dict_b = {}
-        vertices_estado_a = []
-        vertices_estado_b = []
-        disparos_enemigos_a = []
-        disparos_enemigos_b = []
-        #RESET ESCENARIO 3
-        fase_carrier_a = "entrada"
-        fase_carrier_b = "entrada"
-        y_inicial_carrier_a = -20
-        y_inicial_carrier_b = -20
-        disparos_enemigos_a = []
-        disparos_enemigos_b = []
-        proyectiles_jugador.clear()
-        
-        ultimo_golpe = pygame.time.get_ticks()
+            # Reiniciar variables recién después de ENTER
+            vidas = 3
+            puntaje_jugador = 0
+            escenario = 1
+            contador_enemigos = 0
+            jugador_x, jugador_y = 400, 500
+            #RESET ESCENARIO 1
+            fase_a = "entrada"
+            fase_b = "entrada"
+            y_inicial_squad_a = -100
+            y_inicial_squad_b = 0
+            disparos_enemigos_a = []
+            disparos_enemigos_b = []
+            #RESET ESCENARIO 2
+            fase_a_pol = "entrada"
+            fase_b_pol = "entrada"
+            y_inicial_pol_a = -480
+            y_inicial_pol_b = -210
+            rot_a = 0
+            rot_b = 0
+            nave_central_dict_a = {}  
+            nave_central_dict_b = {}
+            vertices_estado_a = []
+            vertices_estado_b = []
+            disparos_enemigos_a = []
+            disparos_enemigos_b = []
+            #RESET ESCENARIO 3
+            fase_carrier_a = "entrada"
+            fase_carrier_b = "entrada"
+            y_inicial_carrier_a = -20
+            y_inicial_carrier_b = -20
+            disparos_enemigos_a = []
+            disparos_enemigos_b = []
+            proyectiles_jugador.clear()
+
+            ultimo_golpe = pygame.time.get_ticks()
 
         pygame.display.flip()
         pygame.time.Clock().tick(60)
 
-    pygame.quit()
+
+

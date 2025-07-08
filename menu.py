@@ -37,12 +37,16 @@ botones = [
 corriendo = True
 
 def dib_menu():
-    ventana.fill(negro) 
+    fondo = pygame.image.load("assets/backgrounds/Fondo menu.png")
+    #ventana.fill(negro)
+    fondo = pygame.transform.scale(fondo, (800, 600)) 
+    ventana.blit(fondo,(0,0))
     for boton in botones:
-        pygame.draw.rect(ventana, rojo, boton["rect"]) #dibuja un rect a cada boton
+        pygame.draw.rect(ventana, (255,255,255), boton["rect"]) #dibuja un rect a cada boton
         texto = fuente.render(boton["texto"], True, negro) #renderiza el text del boton en blanco
         texto_rect = texto.get_rect(center=boton["rect"].center) #obtiene la posicion del centro del rect
         ventana.blit(texto, texto_rect) # Dibuja el texto en la pantalla
+    
     pygame.display.update() #actualiza la pantalla
     
     
@@ -69,34 +73,61 @@ def mostrar_ranking_en_menu(ventana, fuente):
             ):
                 esperando = False    
     
-    
+def mostrar_creditos(ventana, fuente):
+    corriendo = True
+    while corriendo:
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT or (
+                evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE
+            ):
+                corriendo = False
 
-while corriendo:
-    dib_menu() #llama a la funcion
+        ventana.fill((0, 0, 0))
+        fuente = pygame.font.SysFont(None, 30)
+        titulo = fuente.render("🎬 CRÉDITOS", True, (255, 215, 0))
+        linea1 = fuente.render("Programación: Bruno; Sebastian; Yamila.", True, (255, 255, 255))
+        linea2 = fuente.render("Música y FX: Librería pixabay.com", True, (200, 200, 200))
+        linea3 = fuente.render("Arte: Sprites personalizados y libres", True, (200, 200, 200))
+        salir = fuente.render("Presioná ESC para volver", True, (150, 150, 150))
 
-    for evento in pygame.event.get():
-        if evento.type == pygame.quit:
-            corriendo = False #si se cierra la ventana se termna el bucle
+        ventana.blit(titulo, (250, 80))
+        ventana.blit(linea1, (200, 150))
+        ventana.blit(linea2, (200, 200))
+        ventana.blit(linea3, (200, 250))
+        ventana.blit(salir, (200, 400))
 
-        if evento.type == pygame.MOUSEBUTTONDOWN: # Si se presiona el mouse
-                pos = pygame.mouse.get_pos() # Obtiene la posición del mouse donde se hizo clic
-                print(pos)
-                for boton in botones:
-                    if boton["rect"].collidepoint(pos): # Si el clic fue dentro del rectángulo del botón
-                        print("Clic en:", boton["texto"])
-                        if boton["texto"] == "Jugar":
-                            print("Iniciando el juego...")
-                            iniciar_juego()
-                        elif boton["texto"] == "Ranking":
-                            mostrar_ranking_en_menu(ventana, fuente)
-                        elif boton["texto"] == "Créditos":
-                            print("Mostrando los créditos...")
-                            # Acá podemos llamar a la función de créditos
-                        elif boton["texto"] == "Salir":
-                            corriendo = False
+        pygame.display.flip()   
+def ejecutar_menu():
+    corriendo = True
+    while corriendo:
+        dib_menu() #llama a la funcion
 
-pygame.quit() # Se cierra correctamente PyGame liberando los recursos usados.
-        
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                corriendo = False #si se cierra la ventana se termna el bucle
+
+            if evento.type == pygame.MOUSEBUTTONDOWN: # Si se presiona el mouse
+                    pos = pygame.mouse.get_pos() # Obtiene la posición del mouse donde se hizo clic
+                    print(pos)
+                    for boton in botones:
+                        if boton["rect"].collidepoint(pos): # Si el clic fue dentro del rectángulo del botón
+                            print("Clic en:", boton["texto"])
+                            if boton["texto"] == "Jugar":
+                                print("Iniciando el juego...")
+                                iniciar_juego()
+                            elif boton["texto"] == "Ranking":
+                                mostrar_ranking_en_menu(ventana, fuente)
+                            elif boton["texto"] == "Créditos":
+                                mostrar_creditos(ventana, fuente)
+                                # Acá podemos llamar a la función de créditos
+                            elif boton["texto"] == "Salir":
+                                corriendo = False
+
+     # Se cierra correctamente PyGame liberando los recursos usados.
+if __name__ == "__main__":
+    ejecutar_menu()
+    pygame.quit()
+
 
 
 

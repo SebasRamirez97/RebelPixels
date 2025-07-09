@@ -56,7 +56,7 @@ def iniciar_juego():
     VELOCIDAD_JUGADOR = 5
     jugador_sprite = p_image()
 
-   
+
     proyectiles_jugador = []
     vuelta = 1
     puntaje_jugador = 0
@@ -172,7 +172,7 @@ def iniciar_juego():
         if fase_a_pol == "batalla":
             vidas,ultimo_golpe = detectar_colisiones_vertices(jugador_x,jugador_y,jugador_mask, vertices_estado_a, nave_central_dict_a, 120, rot_a,vidas,ultimo_golpe,cooldown_ms)
         if fase_b_pol == "batalla":
-            vidas,ultimo_golpe = detectar_colisiones_vertices(jugador_x,jugador_y,jugador_mask, vertices_estado_b, nave_central_dict_b, 120, rot_a,vidas,ultimo_golpe,cooldown_ms) 
+            vidas,ultimo_golpe = detectar_colisiones_vertices(jugador_x,jugador_y,jugador_mask, vertices_estado_b, nave_central_dict_b, 120, rot_b,vidas,ultimo_golpe,cooldown_ms) 
         
         if pygame.time.get_ticks() - ultimo_golpe < 1000:
             herido = jugador_sprite.copy()
@@ -294,7 +294,7 @@ def iniciar_juego():
 
         
         if vidas <= 0:
-            mostrar_pantalla_gameover(ventana, font, puntaje_jugador)
+            procesar_gameover(ventana, font, puntaje_jugador)
 
             # Reiniciar variables recién después de ENTER
             vidas = 3

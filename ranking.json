@@ -1,5 +1,13 @@
 [
     {
+        "nombre": "sebas",
+        "puntaje": 6450
+    },
+    {
+        "nombre": "pablo",
+        "puntaje": 5900
+    },
+    {
         "nombre": "pepe",
         "puntaje": 1600
     },
@@ -10,13 +18,5 @@
     {
         "nombre": "pepe1",
         "puntaje": 1200
-    },
-    {
-        "nombre": "juan12",
-        "puntaje": 1100
-    },
-    {
-        "nombre": "Pedro123",
-        "puntaje": 900
     }
 ]

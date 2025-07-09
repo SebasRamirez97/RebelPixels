@@ -42,7 +42,7 @@ def crear_disparo(tipo, x, y, objetivo_x=None, objetivo_y=None):
                 "color": (255, 255, 255),
                 "ancho": 4,
                 "alto": 10,
-                "tipo": "default"},
+                "tipo": "triple"},
                 {
                 "posicion": (x, y),
                 "direccion": direccion_izquierda,
@@ -50,14 +50,14 @@ def crear_disparo(tipo, x, y, objetivo_x=None, objetivo_y=None):
                 "color": (255, 255, 255),
                 "ancho": 4,
                 "alto": 10,
-                "tipo": "default"},
+                "tipo": "triple"},
                 {
                 "posicion": (x, y),
                 "velocidad": 5,
                 "color": (255, 255, 255),
                 "ancho": 4,
                 "alto": 10,
-                "tipo": "default"}
+                "tipo": "triple"}
                 ]
             return dicionario_triple
             

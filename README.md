@@ -1,6 +1,6 @@
 # 🎮 RebelPixels
 
-**RebelPixels** es un juego de disparos en 2D con estética retro y alma rebelde. Enfrentate a escuadrones enemigos, esquivá lluvias de proyectiles, y defendé la galaxia con pura habilidad y reflejos. Diseñado con amor, código modular y una obsesión por la jugabilidad justa.
+**RebelPixels** es un juego de disparos en 2D con estética retro. Enfrentate a escuadrones enemigos, esquivá lluvias de proyectiles, y defendé la galaxia con pura habilidad y reflejos.
 
 ---
 
@@ -31,7 +31,7 @@
 ---
 
 ## 🧩 Estructura del Proyecto
-```markdown
+```bash
 RebelPixels
 |-- README.md
 |
@@ -66,7 +66,7 @@ RebelPixels
     |-- funciones_comunes.py
     |-- jugador.py
     `-- sonido.py
-
+```
 
 ## 🛠️ Requisitos
 
@@ -82,20 +82,13 @@ RebelPixels
 
 ```bash
 pip install -r requirements.txt
-
+```
 3. Ejecutá el menú:
-
 ```bash
 python menu.py
-
+```
 ---
 
 ## 📜 Créditos
 
-Desarrollado por **Sebastián**, con pasión por el código limpio, la jugabilidad justa y los píxeles rebeldes.
-
----
-
-## 🛸 ¿Por qué es el mejor juego de la historia?
-
-Porque no solo dispara píxeles... dispara pasión, precisión y propósito.
+Desarrollado por **Sebastián** **Yamila** **Bruno**.

@@ -34,7 +34,7 @@ def detectar_colisiones_vertices(jugador_x,jugador_y,mascara_jugador, vertices, 
             if mascara_jugador.overlap(vertice["mask_nave"], offset_vertice):
                 vidas-=1
                 ultimo_golpe = tiempo_actual
-                break
+                
     offset_nave_central =  (int(nave_central_dict["posicion"][0] - jugador_x), int(nave_central_dict["posicion"][1]- jugador_y))
     
     if mascara_jugador.overlap(nave_central_dict["mask_nave"], offset_nave_central):

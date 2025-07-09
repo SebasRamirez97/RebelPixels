@@ -172,7 +172,7 @@ def iniciar_juego():
         if fase_a_pol == "batalla":
             vidas,ultimo_golpe = detectar_colisiones_vertices(jugador_x,jugador_y,jugador_mask, vertices_estado_a, nave_central_dict_a, 120, rot_a,vidas,ultimo_golpe,cooldown_ms)
         if fase_b_pol == "batalla":
-            vidas,ultimo_golpe = detectar_colisiones_vertices(jugador_x,jugador_y,jugador_mask, vertices_estado_b, nave_central_dict_b, 120, rot_a,vidas,ultimo_golpe,cooldown_ms) 
+            vidas,ultimo_golpe = detectar_colisiones_vertices(jugador_x,jugador_y,jugador_mask, vertices_estado_b, nave_central_dict_b, 120, rot_b,vidas,ultimo_golpe,cooldown_ms) 
         
         if pygame.time.get_ticks() - ultimo_golpe < 1000:
             herido = jugador_sprite.copy()
@@ -212,6 +212,7 @@ def iniciar_juego():
                     pos_central_b = (600,y_inicial_pol_b)
                     disparos_enemigos_a = []
                     disparos_enemigos_b =[]
+                    aux_x = 0
             case 2:
                 #ESCENARIO 2
                 

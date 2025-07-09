@@ -92,13 +92,13 @@ def batalla_varios_escuadrones(lista_escuadrones,velocidad_x,jugador_x,jugador_y
                 
                 disparos_enemigos.extend([disparo1, disparo2])
             for disparo in disparos_jugador[:]:
-                if disparo["rect"].colliderect(pygame.Rect(nave["posicion"][0], nave["posicion"][1], 60, 60)):
-                    nave["vida"] -= 50
+                if disparo["rect"].colliderect(pygame.Rect(nave["posicion"][0], nave["posicion"][1], 40, 40)):
+                    nave["vida"] -= 20
                     disparos_jugador.remove(disparo)
                     herido = nave["sprite_nave"].copy()
                     herido.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_ADD)
                     ventana.blit(herido, (nave["posicion"][0], nave["posicion"][1]))
-                    break
+                    
                     
                 
             offset = (int(nave["posicion"][0] - jugador_x), int(nave["posicion"][1] - jugador_y))
@@ -193,19 +193,17 @@ def batalla_poligomica(nave_central_dict,disparos_central, vertices_estado, esca
             y = nave_central_dict["posicion"][1] + distancia * math.sin(angulo) + (1024 * escala) / 4
             vertice["posicion"] = (x,y)
             pos = (x, y)
-            offset = (int(pos[0] - jugador_x), int(pos[1] - jugador_y))
+            offset_vertice = (int(pos[0] - jugador_x), int(pos[1] - jugador_y))
 
             for disparo in disparos_jugador[:]:
-                if disparo["rect"].colliderect(pygame.Rect(vertice["posicion"][0], vertice["posicion"][1], 60, 60)):
-                    vertice["vida"] -= 30
+                if disparo["rect"].colliderect(pygame.Rect(vertice["posicion"][0], vertice["posicion"][1], 72, 72)):
+                    vertice["vida"] -= 10
                     disparos_jugador.remove(disparo)
                     herido = vertice["sprite_nave"].copy()
                     herido.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_ADD)
                     ventana.blit(herido, (vertice["posicion"][0], vertice["posicion"][1]))
                     break
             
-            if jugador_mask.overlap(mask_nave_vertice, offset):
-                vertice["vida"] -=10
                 
             if vertice["vida"] <= 0:
                 vertice["estado"] = "destruido"
@@ -224,7 +222,7 @@ def batalla_poligomica(nave_central_dict,disparos_central, vertices_estado, esca
         tiempo_actual = pygame.time.get_ticks()
 
         if not nave_central_dict["rafaga"]:
-            if tiempo_actual - nave_central_dict["ultimo_tick"] > 1500:  # cada 1.5 segundos
+            if tiempo_actual - nave_central_dict["ultimo_tick"] > 500:  # cada 1.5 segundos
                 nave_central_dict["rafaga"] = True
                 nave_central_dict["disparos_rafaga"] = 0
                 nave_central_dict["ultimo_tick"] = tiempo_actual
@@ -232,8 +230,8 @@ def batalla_poligomica(nave_central_dict,disparos_central, vertices_estado, esca
 # Si hay una ráfaga activa, disparar 3 veces con intervalo
         if nave_central_dict["rafaga"]:
             if tiempo_actual - nave_central_dict["ultimo_tick"] > 200:  # intervalo entre disparos
-                disparos_central.extend(crear_disparo("triple", nave_central_dict["posicion"][0] + 14, nave_central_dict["posicion"][1] + 50, jugador_x, jugador_y+60))
-                disparos_central.extend(crear_disparo("triple", nave_central_dict["posicion"][0] + 46, nave_central_dict["posicion"][1] + 50, jugador_x, jugador_y+60))
+                disparos_central.extend(crear_disparo("triple", nave_central_dict["posicion"][0] + 25, nave_central_dict["posicion"][1] + 99, jugador_x, jugador_y))
+                disparos_central.extend(crear_disparo("triple", nave_central_dict["posicion"][0] + 92, nave_central_dict["posicion"][1] + 99, jugador_x, jugador_y))
                 
 
                 nave_central_dict["disparos_rafaga"] += 1
@@ -243,7 +241,7 @@ def batalla_poligomica(nave_central_dict,disparos_central, vertices_estado, esca
                 nave_central_dict["rafaga"] = False
 
         for disparo in disparos_jugador[:]:
-            if disparo["rect"].colliderect(pygame.Rect(nave_central_dict["posicion"][0], nave_central_dict["posicion"][1], 125, 125)):
+            if disparo["rect"].colliderect(pygame.Rect(nave_central_dict["posicion"][0], nave_central_dict["posicion"][1], 123, 123)):
                 nave_central_dict["vida"] -= 30
                 disparos_jugador.remove(disparo)
                 herido = nave_central_dict["sprite_nave"].copy()
@@ -368,8 +366,9 @@ def batalla_carrier(diccionario_carrier, tick_actual, nave_tropa, nave_tropa_mas
     
     if diccionario_carrier["estado"] == "activo":
         for disparo in disparos_jugador[:]:
-                if disparo["rect"].colliderect(pygame.Rect(x_carrier, y_carrier, 160, 160)):
-                    diccionario_carrier["vida"] -= 100
+                if disparo["rect"].colliderect(pygame.Rect(x_carrier, y_carrier, 154, 154)):
+                    diccionario_carrier["vida"] -= 20
+                    print(diccionario_carrier["vida"])
                     disparos_jugador.remove(disparo)
                     herido = diccionario_carrier["sprite_nave"].copy()
                     herido.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_ADD)
